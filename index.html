@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fr" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forceux :: Comparateur de Force</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        forceux: { 500: '#E63946', 600: '#D62835', glow: 'rgba(230, 57, 70, 0.4)' }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #09090b;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(230, 57, 70, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(230, 57, 70, 0.08), transparent 25%);
+            color: #f4f4f5;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        input[type="number"]:focus, select:focus {
+            outline: none !important;
+            border-color: #E63946 !important;
+            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.25), 0 0 16px rgba(230, 57, 70, 0.18) !important;
+        }
+
+        /* ── Rank Reveal ── */
+        @keyframes rankReveal {
+            0%   { opacity: 0; transform: scale(0.3) rotate(-15deg); }
+            60%  { transform: scale(1.18) rotate(4deg); }
+            80%  { transform: scale(0.94) rotate(-2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        .rank-icon-reveal {
+            animation: rankReveal 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* ── Emoji glow (below icon, not on text) ── */
+        .rank-icon-glow {
+            position: relative;
+            display: inline-block;
+        }
+        .rank-icon-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 28px;
+            border-radius: 50%;
+            filter: blur(12px);
+            opacity: 0.75;
+        }
+
+        /* ── Glow text by tier (text only, no glow on icon) ── */
+        .rank-glow-gray    { color: #a1a1aa; text-shadow: 0 0 24px rgba(161,161,170,0.5), 0 0 48px rgba(161,161,170,0.25); }
+        .rank-glow-blue    { color: #60a5fa; text-shadow: 0 0 24px rgba(96,165,250,0.6), 0 0 48px rgba(96,165,250,0.3); }
+        .rank-glow-amber   { color: #fbbf24; text-shadow: 0 0 24px rgba(251,191,36,0.6), 0 0 48px rgba(251,191,36,0.3); }
+        .rank-glow-red     { color: #f87171; text-shadow: 0 0 24px rgba(248,113,113,0.7), 0 0 56px rgba(248,113,113,0.35); }
+        .rank-glow-emerald { color: #34d399; text-shadow: 0 0 24px rgba(52,211,153,0.7), 0 0 56px rgba(52,211,153,0.35); }
+        .rank-glow-violet  { color: #a78bfa; text-shadow: 0 0 24px rgba(167,139,250,0.7), 0 0 56px rgba(167,139,250,0.35); }
+        .rank-glow-gold    {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #fcd34d, #f59e0b, #fbbf24);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShimmer 2.5s linear infinite;
+            filter: drop-shadow(0 0 18px rgba(251,191,36,0.6));
+        }
+        @keyframes goldShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* ── Count-up ── */
+        @keyframes countUp {
+            from { opacity: 0.3; }
+            to   { opacity: 1; }
+        }
+
+        /* ── Progress bars ── */
+        @keyframes barFill {
+            from { width: 0%; }
+        }
+        .bar-fill {
+            animation: barFill 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .bar-1 { animation-delay: 0.5s; }
+        .bar-2 { animation-delay: 0.68s; }
+        .bar-3 { animation-delay: 0.86s; }
+
+        /* ── Confetti ── */
+        @keyframes confettiFall {
+            0%   { transform: translateY(-20px) rotate(0deg) scaleX(1); opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg) scaleX(-1); opacity: 0; }
+        }
+        .confetti-piece {
+            position: fixed;
+            top: -20px;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+            z-index: 9999;
+            border-radius: 2px;
+        }
+
+        /* ── Particles ── */
+        @keyframes particleRise {
+            0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg) scale(0.3); opacity: 0; }
+        }
+        .particle {
+            position: fixed;
+            bottom: -20px;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleRise linear forwards;
+            z-index: 9999;
+        }
+
+        /* ── Tier dots ── */
+        .tier-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .tier-dot.lit  { box-shadow: 0 0 8px 2px currentColor; }
+        .tier-dot.dim  { opacity: 0.2; }
+
+        /* ── CTA gradient override ── */
+        .cta-card { transition: all 0.4s ease; }
+
+        /* ── Milestone card shimmer (Légendaire) ── */
+        .legendary-milestone {
+            background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.06), rgba(252,211,77,0.12));
+            border: 1px solid rgba(251,191,36,0.35);
+            animation: legendaryPulse 3s ease-in-out infinite;
+        }
+        @keyframes legendaryPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(251,191,36,0.15); }
+            50%       { box-shadow: 0 0 36px rgba(251,191,36,0.35); }
+        }
+
+        /* ── Fade-in-up for @keyframes reference in JS ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+
+<!-- Particle container (fixed, appended by JS) -->
+<div id="particleContainer"></div>
+
+<div class="w-full max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8 animate-fade-in-up">
+        <div class="inline-flex items-center justify-center mb-5">
+            <img src="logo-rond.png" alt="Forceux Académie"
+                 onerror="if(!this.processed){this.processed=true;this.src='logo-rond.jpg';}else{this.src='https://placehold.co/120x120/1c1c1e/ffffff?text=FA';}"
+                 class="w-24 h-24 rounded-full border-2 border-forceux-500/80 shadow-[0_0_25px_rgba(230,57,70,0.35)] object-cover">
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white px-2 leading-tight">
+            Compare ta force avec le <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(to right, #E63946, #fb7083);">reste du monde</span>
+        </h1>
+        <p class="text-zinc-500 text-sm mt-2 font-medium">Basé sur les performances de +350k compétiteurs vérifiés</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden z-10" style="animation: fadeInUp 0.6s ease-out forwards;">
+        <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-600/50 to-transparent"></div>
+
+        <div class="space-y-6">
+            <!-- Sexe -->
+            <div>
+                <label for="sexe" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Catégorie</label>
+                <div class="relative">
+                    <select id="sexe" class="w-full bg-zinc-950/50 border border-zinc-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 transition-all appearance-none cursor-pointer font-medium">
+                        <option value="H">Homme</option>
+                        <option value="F">Femme</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifts -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="sq" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Squat</label>
+                    <div class="relative">
+                        <input type="number" id="sq" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
+                    </div>
+                </div>
+                <div>
+                    <label for="bp" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Bench</label>
+                    <div class="relative">
+                        <input type="number" id="bp" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
+                    </div>
+                </div>
+                <div>
+                    <label for="dl" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Deadlift</label>
+                    <div class="relative">
+                        <input type="number" id="dl" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <button onclick="comparer()" class="w-full relative group mt-4">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-forceux-500 to-rose-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                <div class="relative w-full bg-gradient-to-r from-forceux-500 to-forceux-600 hover:from-forceux-600 hover:to-rose-600 text-white font-bold text-lg py-4 px-8 rounded-xl transition-all duration-200 transform group-active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg">
+                    <span>Analyser ma force</span>
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+            </button>
+
+            <!-- Results zone -->
+            <div id="resultatContainer" class="hidden">
+                <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-8"></div>
+
+                <!-- ★ RANK REVEAL (injected by JS) ★ -->
+                <div id="rankRevealZone"></div>
+
+                <!-- Content results -->
+                <div id="resultat" class="space-y-6 mt-8"></div>
+
+                <!-- Radar Chart -->
+                <div id="radarWrap" class="relative h-[320px] sm:h-[380px] w-full mt-8 bg-zinc-950/30 rounded-2xl p-4 border border-zinc-800/50 hidden">
+                    <canvas id="radarChart"></canvas>
+                </div>
+
+                <!-- ★ CTA (injected by JS) ★ -->
+                <div id="ctaZone" class="mt-8"></div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center text-zinc-600 text-xs mt-8 font-medium">
+        Basé sur données de <a href="https://www.openipf.org" target="_blank" rel="noopener noreferrer" class="hover:text-forceux-500 underline transition-colors">Openipf.org</a>
+    </p>
+</div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────────────────────
+const dataRefRaw = {
+    H: { FR: {sq:199.25,bp:134.80,dl:229.72,total:567.83}, WW: {sq:188.30,bp:125.18,dl:217.11,total:532.75} },
+    F: { FR: {sq:124.75,bp:74.47,dl:149.00,total:352.55},  WW: {sq:110.76,bp:62.36,dl:133.43,total:308.82} }
+};
+function arr(v){ return Math.round(v/2.5)*2.5; }
+const dataRef = {
+    H: { FR:{sq:arr(199.25),bp:arr(134.80),dl:arr(229.72),total:arr(567.83)}, WW:{sq:arr(188.30),bp:arr(125.18),dl:arr(217.11),total:arr(532.75)} },
+    F: { FR:{sq:arr(124.75),bp:arr(74.47), dl:arr(149.00),total:arr(352.55)}, WW:{sq:arr(110.76),bp:arr(62.36), dl:arr(133.43),total:arr(308.82)} }
+};
+
+// ─── Rank system ─────────────────────────────────────────────────────────────
+const RANKS = [
+    { key:'novice',       label:'Novice',        icon:'🌱', minPct:0,        maxPct:60,       colorClass:'rank-glow-gray',    hex:'#a1a1aa', tailwind:'zinc',    ctaGrad:'from-zinc-800 to-zinc-900',    btnGrad:'from-zinc-600 to-zinc-700',      btnGlow:'rgba(161,161,170,0.3)',   headline:'Découvre ton potentiel',                 body:"Chaque champion a commencé quelque part. Rejoins Forceux Académie et construis des bases en béton.",                          btn:'Commencer ma progression →' },
+    { key:'intermediaire',label:'Intermédiaire', icon:'⚡', minPct:60,       maxPct:86,       colorClass:'rank-glow-blue',    hex:'#60a5fa', tailwind:'blue',    ctaGrad:'from-blue-950 to-zinc-900',    btnGrad:'from-blue-600 to-blue-700',      btnGlow:'rgba(96,165,250,0.35)',   headline:'Tu es sur la bonne trajectoire',         body:"Tes bases sont solides. Forceux Académie t'apprend à t'autocoacher pour franchir le cap suivant sans programme générique.",               btn:'Accélérer ma progression →' },
+    { key:'avance',       label:'Avancé',        icon:'🔥', minPct:86,       maxPct:106,      colorClass:'rank-glow-amber',   hex:'#fbbf24', tailwind:'amber',   ctaGrad:'from-amber-950 to-zinc-900',   btnGrad:'from-amber-500 to-amber-600',    btnGlow:'rgba(251,191,36,0.4)',    headline:'Tu es au-dessus de la moyenne mondiale', body:"Tu dépasses la plupart des compétiteurs. Forceux Académie te donne les outils pour t'autocoacher et viser le top 20 %.",                    btn:'Franchir le cap Expert →' },
+    { key:'expert',       label:'Expert',        icon:'🏆', minPct:106,      maxPct:126,      colorClass:'rank-glow-red',     hex:'#f87171', tailwind:'red',     ctaGrad:'from-red-950 to-zinc-900',     btnGrad:'from-red-600 to-red-700',        btnGlow:'rgba(248,113,113,0.45)', headline:'Tu fais partie des meilleurs',           body:"Seulement 15 % des athlètes atteignent ce niveau. Forceux Académie t'aide à devenir 100 % autonome pour franchir le rang Élite.",                             btn:'Atteindre le rang Élite →' },
+    { key:'elite',        label:'Élite',         icon:'💎', minPct:126,      maxPct:146,      colorClass:'rank-glow-violet',  hex:'#a78bfa', tailwind:'violet',  ctaGrad:'from-violet-950 to-zinc-900',  btnGrad:'from-violet-500 to-violet-600',  btnGlow:'rgba(167,139,250,0.45)', headline:"Tu domines l'arène mondiale",            body:"Top 5 % planétaire. Forceux Académie t'a appris à t'affranchir des programmes génériques — la légende est à un palier.",                        btn:'Devenir Légendaire →' },
+    { key:'legendaire',   label:'Légendaire',    icon:'⚜️', minPct:146,      maxPct:Infinity, colorClass:'rank-glow-gold',    hex:'#fbbf24', tailwind:'yellow',  ctaGrad:'from-yellow-950 to-zinc-900',  btnGrad:'from-yellow-500 to-amber-500',   btnGlow:'rgba(251,191,36,0.55)',  headline:'Tu es une légende vivante',              body:"Moins de 1 % des athlètes de la planète ont atteint ce rang. Forceux Académie t'a armé pour dominer.",                             btn:"Rejoindre Forceux Académie →" },
+];
+
+function getRank(pctWW) {
+    const p = parseFloat(pctWW);
+    return RANKS.find(r => p >= r.minPct && p < r.maxPct) || RANKS[RANKS.length-1];
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const getBadgeClass = (pct) => {
+    const n = parseFloat(pct);
+    if (n >= 100) return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+    if (n >= 80)  return 'bg-amber-500/10 text-amber-400 border border-amber-500/30';
+    return 'bg-rose-500/10 text-rose-400 border border-rose-500/30';
+};
+const getIcon = (pct) => parseFloat(pct) >= 100
+    ? `<svg class="w-4 h-4 text-emerald-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>`
+    : `<svg class="w-4 h-4 text-rose-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>`;
+
+// ─── Confetti ────────────────────────────────────────────────────────────────
+const CONFETTI_COLORS = ['#E63946','#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#fb923c','#fff'];
+function spawnConfetti() {
+    const container = document.getElementById('particleContainer');
+    for (let i = 0; i < 90; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        const w = 6 + Math.random() * 10;
+        const h = w * (0.4 + Math.random() * 0.6);
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        p.style.cssText = `
+            width:${w}px; height:${h}px;
+            left:${Math.random()*100}vw;
+            background:${color};
+            animation-duration:${2.4 + Math.random()*2.2}s;
+            animation-delay:${Math.random()*0.9}s;
+            border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        `;
+        container.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+    }
+}
+
+// ─── Particles (Élite/Légendaire) ────────────────────────────────────────────
+function spawnParticles(color) {
+    const container = document.getElementById('particleContainer');
+    for (let i = 0; i < 28; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = 8 + Math.random() * 14;
+        p.style.cssText = `
+            width:${size}px; height:${size}px;
+            left:${Math.random()*100}vw;
+            background:${color};
+            animation-duration:${2.2 + Math.random()*2.4}s;
+            animation-delay:${Math.random()*0.8}s;
+            opacity:0.85;
+            box-shadow: 0 0 ${size}px ${color};
+        `;
+        container.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+    }
+}
+
+// ─── Count-up ────────────────────────────────────────────────────────────────
+function animateCount(el, target, duration=1100) {
+    const start = performance.now();
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(ease * target);
+        if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+// ─── Progress bar color ───────────────────────────────────────────────────────
+function barColor(pct) {
+    if (pct >= 100) return '#34d399';   // emerald
+    if (pct >= 80)  return '#fbbf24';   // amber
+    return '#f87171';                   // red
+}
+
+// ─── Main function ───────────────────────────────────────────────────────────
+let myChart = null;
+
+function comparer() {
+    const sexe  = document.getElementById('sexe').value;
+    const vSq   = parseFloat(document.getElementById('sq').value) || 0;
+    const vBp   = parseFloat(document.getElementById('bp').value) || 0;
+    const vDl   = parseFloat(document.getElementById('dl').value) || 0;
+    const total = vSq + vBp + vDl;
+
+    const resContainer = document.getElementById('resultatContainer');
+    const resContent   = document.getElementById('resultat');
+    const rankZone     = document.getElementById('rankRevealZone');
+    const ctaZone      = document.getElementById('ctaZone');
+
+    resContainer.classList.remove('hidden');
+    resContainer.classList.add('animate-fade-in-up');
+
+    // Scroll to results
+    setTimeout(() => resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+
+    if (total === 0) {
+        rankZone.innerHTML = '';
+        resContent.innerHTML = `
+            <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                <p class="text-red-400 font-medium">Veuillez entrer au moins une performance (kg).</p>
+            </div>`;
+        ctaZone.innerHTML = '';
+        document.getElementById('radarWrap').classList.add('hidden');
+        if(myChart) myChart.destroy();
+        return;
+    }
+
+    document.getElementById('radarWrap').classList.remove('hidden');
+    const ref = dataRef[sexe];
+
+    // Percentages
+    const pctWW = ((total / ref.WW.total) * 100).toFixed(1);
+    const pctFR = ((total / ref.FR.total) * 100).toFixed(1);
+    const pctSqFR = ((vSq / ref.FR.sq) * 100).toFixed(1);
+    const pctSqWW = ((vSq / ref.WW.sq) * 100).toFixed(1);
+    const pctBpFR = ((vBp / ref.FR.bp) * 100).toFixed(1);
+    const pctBpWW = ((vBp / ref.WW.bp) * 100).toFixed(1);
+    const pctDlFR = ((vDl / ref.FR.dl) * 100).toFixed(1);
+    const pctDlWW = ((vDl / ref.WW.dl) * 100).toFixed(1);
+
+    const rank = getRank(pctWW);
+
+    // ── RANK REVEAL ──────────────────────────────────────────────────────────
+    const tierDots = RANKS.map((r, i) => {
+        const active = RANKS.indexOf(rank) >= i;
+        return `<div class="tier-dot ${active ? 'lit' : 'dim'}" style="background:${r.hex};color:${r.hex}" title="${r.label}"></div>`;
+    }).join('');
+
+    rankZone.innerHTML = `
+        <div class="text-center py-6 space-y-4">
+            <div class="rank-icon-glow" style="--glow-color:${rank.hex}">
+                <div id="rankIcon" class="text-7xl sm:text-8xl leading-none rank-icon-reveal" style="opacity:0;filter:drop-shadow(0 8px 20px ${rank.hex}99)">${rank.icon}</div>
+                <div style="width:70%;height:24px;margin:0 auto;background:${rank.hex};border-radius:50%;filter:blur(14px);opacity:0.5;margin-top:-8px;pointer-events:none;"></div>
+            </div>
+            <div>
+                <p class="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-1">Rang atteint</p>
+                <div class="text-4xl sm:text-5xl font-black ${rank.colorClass}" id="rankLabel">${rank.label.toUpperCase()}</div>
+            </div>
+            <div class="flex items-center justify-center gap-2.5 pt-1">${tierDots}</div>
+            <p class="text-xs text-zinc-600 font-medium">${RANKS.indexOf(rank) + 1} / ${RANKS.length} niveaux</p>
+            <div class="mt-4">
+                <p class="text-zinc-500 text-xs font-semibold uppercase tracking-widest mb-1">Total soulevé</p>
+                <div class="flex items-baseline justify-center gap-1">
+                    <span id="countUpEl" class="text-5xl font-black text-white tracking-tighter">0</span>
+                    <span class="text-2xl text-zinc-500 font-semibold">kg</span>
+                </div>
+            </div>
+        </div>`;
+
+    // Animate count-up
+    setTimeout(() => animateCount(document.getElementById('countUpEl'), total), 200);
+
+    // Confetti on every rank reveal
+    setTimeout(() => spawnConfetti(), 350);
+
+    // Extra particles for Élite+
+    if (rank.key === 'elite' || rank.key === 'legendaire') {
+        setTimeout(() => spawnParticles(rank.hex), 600);
+    }
+
+    // ── MAIN RESULTS ─────────────────────────────────────────────────────────
+    // Progress bar data
+    const lifts = [
+        { name: 'Squat',    val: vSq, avg: ref.WW.sq, pctWW: parseFloat(pctSqWW) },
+        { name: 'Bench',    val: vBp, avg: ref.WW.bp, pctWW: parseFloat(pctBpWW) },
+        { name: 'Deadlift', val: vDl, avg: ref.WW.dl, pctWW: parseFloat(pctDlWW) },
+    ];
+
+    const progressBars = lifts.map((l, i) => {
+        const clampedPct = Math.min(l.pctWW, 160);
+        const color = barColor(l.pctWW);
+        const deficit = l.avg - l.val;
+        const hint = l.pctWW >= 100
+            ? `<span class="text-emerald-400 font-medium">✓ Au-dessus de la moyenne mondiale</span>`
+            : `<span class="text-zinc-500">Il te manque <strong class="text-white">${Math.abs(deficit).toFixed(1)} kg</strong> pour atteindre la moyenne mondiale</span>`;
+        return `
+            <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                    <span class="font-bold text-zinc-300">${l.name}</span>
+                    <span class="font-semibold" style="color:${color}">${l.pctWW.toFixed(1)}% vs Monde</span>
+                </div>
+                <div class="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full bar-fill bar-${i+1}" style="width:${clampedPct}%; background:${color}; box-shadow: 0 0 8px ${color}66;"></div>
+                </div>
+                <p class="text-xs mt-1 text-zinc-500">${hint}</p>
+            </div>`;
+    }).join('');
+
+    // Next milestone
+    const rankIndex = RANKS.indexOf(rank);
+    const nextRank  = RANKS[rankIndex + 1];
+    let milestoneHTML = '';
+    if (nextRank) {
+        const nextPct = nextRank.minPct / 100;
+        const needed  = Math.ceil(ref.WW.total * nextPct - total);
+        milestoneHTML = `
+            <div class="mt-6 rounded-2xl overflow-hidden" style="border:1px solid ${nextRank.hex}40; background:#111113;">
+                <div class="p-4 flex items-center gap-4">
+                    <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:${nextRank.hex}18; border:1px solid ${nextRank.hex}30;">
+                        ${nextRank.icon}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[10px] font-bold tracking-widest uppercase mb-0.5" style="color:${nextRank.hex}">Prochain rang : ${nextRank.label.toUpperCase()}</p>
+                        <p class="text-sm text-zinc-300">Il te manque <strong class="text-white font-black">+${needed} kg</strong> au total pour franchir ce palier.</p>
+                    </div>
+                </div>
+            </div>`;
+    } else {
+        milestoneHTML = `
+            <div class="legendary-milestone rounded-2xl p-4 mt-6 text-center">
+                <span class="text-2xl">⚜️</span>
+                <p class="font-black text-lg rank-glow-gold mt-1">Rang maximum atteint !</p>
+                <p class="text-sm text-zinc-400 mt-1">Tu as atteint le sommet absolu. Il n'y a plus rien au-dessus.</p>
+            </div>`;
+    }
+
+    resContent.innerHTML = `
+        <!-- Global comparison -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
+                <div>
+                    <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-1">Total vs France 🇫🇷</p>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-2xl font-bold text-white">${pctFR}%</span>
+                        <span class="text-xs text-zinc-500">(Moy: ${ref.FR.total}kg)</span>
+                    </div>
+                </div>
+                <div class="p-3 bg-zinc-900 rounded-xl group-hover:scale-105 transition-transform">${getIcon(pctFR)}</div>
+            </div>
+            <div class="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
+                <div>
+                    <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-1">Total vs Monde 🌍</p>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-2xl font-bold text-white">${pctWW}%</span>
+                        <span class="text-xs text-zinc-500">(Moy: ${ref.WW.total}kg)</span>
+                    </div>
+                </div>
+                <div class="p-3 bg-zinc-900 rounded-xl group-hover:scale-105 transition-transform">${getIcon(pctWW)}</div>
+            </div>
+        </div>
+
+        <!-- Per-lift rows -->
+        <div class="space-y-4 mt-2">
+            <h4 class="text-xs font-bold tracking-wider text-zinc-500 uppercase ml-1">Analyse détaillée par mouvement</h4>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Squat</span><span class="text-xs text-zinc-500">Ton max : ${vSq} kg</span></div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctSqFR)}">FR : ${pctSqFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.sq})</span></span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctSqWW)}">Monde : ${pctSqWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.sq})</span></span>
+                    </div>
+                </div>
+                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Bench</span><span class="text-xs text-zinc-500">Ton max : ${vBp} kg</span></div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctBpFR)}">FR : ${pctBpFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.bp})</span></span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctBpWW)}">Monde : ${pctBpWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.bp})</span></span>
+                    </div>
+                </div>
+                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Deadlift</span><span class="text-xs text-zinc-500">Ton max : ${vDl} kg</span></div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctDlFR)}">FR : ${pctDlFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.dl})</span></span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctDlWW)}">Monde : ${pctDlWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.dl})</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress bars -->
+        <div class="bg-zinc-950/40 border border-zinc-800/60 rounded-2xl p-5 mt-2 space-y-4">
+            <h4 class="text-xs font-bold tracking-wider text-zinc-500 uppercase">Progression vs moyenne mondiale</h4>
+            ${progressBars}
+        </div>
+
+        ${milestoneHTML}
+    `;
+
+    // ── CTA ──────────────────────────────────────────────────────────────────
+    ctaZone.innerHTML = `
+        <div class="cta-card rounded-2xl p-6 relative overflow-hidden border text-center" 
+             style="background: linear-gradient(135deg, ${rank.hex}18, rgba(9,9,11,0.95)); border-color:${rank.hex}35;">
+            <div class="absolute inset-0 bg-gradient-to-br ${rank.ctaGrad} opacity-40 pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-xs font-bold tracking-widest uppercase mb-1" style="color:${rank.hex}">${rank.icon} Rang ${rank.label}</p>
+                <h3 class="text-xl font-extrabold text-white mb-2">${rank.headline}</h3>
+                <p class="text-zinc-400 text-sm mb-5 max-w-sm mx-auto">${rank.body}</p>
+                <a href="https://www.forceux.fr/" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center justify-center w-full text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg"
+                   style="background: linear-gradient(135deg, ${rank.hex}, ${rank.hex}cc); box-shadow: 0 4px 24px ${rank.btnGlow};">
+                    ${rank.btn}
+                </a>
+            </div>
+        </div>`;
+
+    // ── RADAR CHART ───────────────────────────────────────────────────────────
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    if(myChart) myChart.destroy();
+    const gradientBg = ctx.createRadialGradient(0,0,0,0,0,150);
+    gradientBg.addColorStop(0,'rgba(230,57,70,0.5)');
+    gradientBg.addColorStop(1,'rgba(230,57,70,0.1)');
+
+    myChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Squat','Bench','Deadlift'],
+            datasets: [
+                { label:' Toi',    data:[vSq,vBp,vDl],             backgroundColor:gradientBg, borderColor:'#E63946', borderWidth:3, pointBackgroundColor:'#fff', pointBorderColor:'#E63946', pointBorderWidth:2, pointRadius:4, pointHoverRadius:6, fill:true, order:1 },
+                { label:' France', data:[ref.FR.sq,ref.FR.bp,ref.FR.dl], borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.15)', borderWidth:2, pointBackgroundColor:'#3B82F6', pointRadius:3, fill:true, order:2 },
+                { label:' Monde',  data:[ref.WW.sq,ref.WW.bp,ref.WW.dl], borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.15)', borderWidth:2, pointBackgroundColor:'#10B981', pointRadius:3, fill:true, order:3 }
+            ]
+        },
+        options: {
+            maintainAspectRatio:false, responsive:true,
+            plugins: {
+                legend: { position:'bottom', labels:{ font:{family:'Inter',size:12,weight:'500'}, color:'#a1a1aa', usePointStyle:true, padding:20 } },
+                tooltip: { backgroundColor:'rgba(24,24,27,0.95)', titleFont:{family:'Inter',size:13,weight:'700'}, bodyFont:{family:'Inter',size:13}, padding:12, cornerRadius:8, borderColor:'rgba(63,63,70,0.5)', borderWidth:1, displayColors:false, callbacks:{ label:(c) => c.dataset.label+': '+c.raw+' kg' } }
+            },
+            scales: { r: {
+                angleLines:{color:'rgba(63,63,70,0.3)'}, grid:{color:'rgba(63,63,70,0.3)'},
+                pointLabels:{font:{family:'Inter',size:13,weight:'600'}, color:'#f4f4f5'},
+                ticks:{color:'#71717a', backdropColor:'transparent', font:{size:10}, stepSize:40, suggestedMin:0}
+            }},
+            animation:{ duration:1000, easing:'easeOutQuart' }
+        }
+    });
+}
+</script>
+</body>
+</html>
