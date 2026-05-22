@@ -10,11 +10,11 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Forceux Académie — Comparateur de Force">
     <meta name="twitter:description" content="Compare ta force avec +350k compétiteurs réels. Découvre ton rang mondial en Squat, Bench et Deadlift.">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -44,7 +44,7 @@
     <style>
         body {
             background-color: #09090b;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 15% 50%, rgba(230, 57, 70, 0.05), transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(230, 57, 70, 0.08), transparent 25%);
             color: #f4f4f5;
@@ -67,36 +67,16 @@
             80%  { transform: scale(0.94) rotate(-2deg); }
             100% { opacity: 1; transform: scale(1) rotate(0deg); }
         }
-        .rank-icon-reveal {
-            animation: rankReveal 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
+        .rank-icon-reveal { animation: rankReveal 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-        /* ── Emoji glow (below icon, not on text) ── */
-        .rank-icon-glow {
-            position: relative;
-            display: inline-block;
-        }
-        .rank-icon-glow::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 28px;
-            border-radius: 50%;
-            filter: blur(12px);
-            opacity: 0.75;
-        }
-
-        /* ── Glow text by tier (text only, no glow on icon) ── */
+        /* ── Glow text by tier ── */
         .rank-glow-gray    { color: #a1a1aa; text-shadow: 0 0 24px rgba(161,161,170,0.5), 0 0 48px rgba(161,161,170,0.25); }
         .rank-glow-blue    { color: #60a5fa; text-shadow: 0 0 24px rgba(96,165,250,0.6), 0 0 48px rgba(96,165,250,0.3); }
         .rank-glow-amber   { color: #fbbf24; text-shadow: 0 0 24px rgba(251,191,36,0.6), 0 0 48px rgba(251,191,36,0.3); }
         .rank-glow-red     { color: #f87171; text-shadow: 0 0 24px rgba(248,113,113,0.7), 0 0 56px rgba(248,113,113,0.35); }
         .rank-glow-emerald { color: #34d399; text-shadow: 0 0 24px rgba(52,211,153,0.7), 0 0 56px rgba(52,211,153,0.35); }
         .rank-glow-violet  { color: #a78bfa; text-shadow: 0 0 24px rgba(167,139,250,0.7), 0 0 56px rgba(167,139,250,0.35); }
-        .rank-glow-gold    {
+        .rank-glow-gold {
             background: linear-gradient(90deg, #fbbf24, #f59e0b, #fcd34d, #f59e0b, #fbbf24);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -110,19 +90,9 @@
             100% { background-position: 200% center; }
         }
 
-        /* ── Count-up ── */
-        @keyframes countUp {
-            from { opacity: 0.3; }
-            to   { opacity: 1; }
-        }
-
         /* ── Progress bars ── */
-        @keyframes barFill {
-            from { width: 0%; }
-        }
-        .bar-fill {
-            animation: barFill 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
+        @keyframes barFill { from { width: 0%; } }
+        .bar-fill { animation: barFill 1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         .bar-1 { animation-delay: 0.5s; }
         .bar-2 { animation-delay: 0.68s; }
         .bar-3 { animation-delay: 0.86s; }
@@ -134,12 +104,8 @@
             100% { transform: translateY(100vh) rotate(720deg) scaleX(-1); opacity: 0; }
         }
         .confetti-piece {
-            position: fixed;
-            top: -20px;
-            pointer-events: none;
-            animation: confettiFall linear forwards;
-            z-index: 9999;
-            border-radius: 2px;
+            position: fixed; top: -20px; pointer-events: none;
+            animation: confettiFall linear forwards; z-index: 9999; border-radius: 2px;
         }
 
         /* ── Particles ── */
@@ -148,27 +114,19 @@
             100% { transform: translateY(-100vh) rotate(720deg) scale(0.3); opacity: 0; }
         }
         .particle {
-            position: fixed;
-            bottom: -20px;
-            pointer-events: none;
-            border-radius: 50%;
-            animation: particleRise linear forwards;
-            z-index: 9999;
+            position: fixed; bottom: -20px; pointer-events: none;
+            border-radius: 50%; animation: particleRise linear forwards; z-index: 9999;
         }
 
         /* ── Tier dots ── */
-        .tier-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .tier-dot.lit  { box-shadow: 0 0 8px 2px currentColor; }
-        .tier-dot.dim  { opacity: 0.2; }
+        .tier-dot { width: 10px; height: 10px; border-radius: 50%; transition: all 0.3s ease; }
+        .tier-dot.lit { box-shadow: 0 0 8px 2px currentColor; }
+        .tier-dot.dim { opacity: 0.2; }
 
-        /* ── CTA gradient override ── */
+        /* ── CTA ── */
         .cta-card { transition: all 0.4s ease; }
 
-        /* ── Milestone card shimmer (Légendaire) ── */
+        /* ── Milestone shimmer (Légendaire) ── */
         .legendary-milestone {
             background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.06), rgba(252,211,77,0.12));
             border: 1px solid rgba(251,191,36,0.35);
@@ -179,7 +137,25 @@
             50%       { box-shadow: 0 0 36px rgba(251,191,36,0.35); }
         }
 
-        /* ── Fade-in-up for @keyframes reference in JS ── */
+        /* ── Toggle ── */
+        .toggle-btn { transition: all 0.2s ease; }
+        .toggle-btn.active {
+            background: #E63946;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(230,57,70,0.4);
+        }
+        .toggle-btn.inactive {
+            background: transparent;
+            color: #71717a;
+        }
+
+        /* ── DOTS score ── */
+        .dots-score-ring {
+            background: conic-gradient(var(--ring-color) var(--ring-pct), #27272a 0);
+            border-radius: 50%;
+            padding: 4px;
+        }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -189,7 +165,6 @@
 
 <body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
 
-<!-- Particle container (fixed, appended by JS) -->
 <div id="particleContainer"></div>
 
 <div class="w-full max-w-2xl mx-auto">
@@ -210,17 +185,39 @@
     <div class="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden z-10" style="animation: fadeInUp 0.6s ease-out forwards;">
         <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-600/50 to-transparent"></div>
 
-        <div class="space-y-6">
+        <!-- ── FORM ── -->
+        <div id="formZone" class="space-y-6">
+
             <!-- Sexe -->
             <div>
-                <label for="sexe" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Catégorie</label>
+                <label for="sexe" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Genre</label>
                 <div class="relative">
                     <select id="sexe" class="w-full bg-zinc-950/50 border border-zinc-800 text-white text-sm rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 transition-all appearance-none cursor-pointer font-medium">
-                        <option value="H">Homme</option>
+                        <option value="M">Homme</option>
                         <option value="F">Femme</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Âge + Poids -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="age" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Âge</label>
+                    <div class="relative">
+                        <input type="number" id="age" placeholder="25" min="12" max="99" step="1"
+                               class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">ans</div>
+                    </div>
+                </div>
+                <div>
+                    <label for="poids" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Poids de corps</label>
+                    <div class="relative">
+                        <input type="number" id="poids" placeholder="80" min="30" max="250" step="0.5"
+                               class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
                     </div>
                 </div>
             </div>
@@ -230,27 +227,30 @@
                 <div>
                     <label for="sq" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Squat</label>
                     <div class="relative">
-                        <input type="number" id="sq" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <input type="number" id="sq" placeholder="0" min="0" step="0.5"
+                               class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
                     </div>
                 </div>
                 <div>
                     <label for="bp" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Bench</label>
                     <div class="relative">
-                        <input type="number" id="bp" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <input type="number" id="bp" placeholder="0" min="0" step="0.5"
+                               class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
                     </div>
                 </div>
                 <div>
                     <label for="dl" class="block text-xs font-semibold tracking-wider text-zinc-400 uppercase mb-2 ml-1">Deadlift</label>
                     <div class="relative">
-                        <input type="number" id="dl" placeholder="0" min="0" step="0.5" class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
+                        <input type="number" id="dl" placeholder="0" min="0" step="0.5"
+                               class="w-full bg-zinc-950/50 border border-zinc-800 text-white rounded-xl focus:ring-2 focus:ring-forceux-500/50 focus:border-forceux-500 block p-4 pl-12 transition-all font-semibold text-lg placeholder-zinc-700">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-zinc-500 font-medium">kg</div>
                     </div>
                 </div>
             </div>
 
-            <!-- CTA Button -->
+            <!-- Analyser Button -->
             <button onclick="comparer()" class="w-full relative group mt-4">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-forceux-500 to-rose-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
                 <div class="relative w-full bg-gradient-to-r from-forceux-500 to-forceux-600 hover:from-forceux-600 hover:to-rose-600 text-white font-bold text-lg py-4 px-8 rounded-xl transition-all duration-200 transform group-active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg">
@@ -258,25 +258,42 @@
                     <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
             </button>
+        </div>
 
-            <!-- Results zone -->
-            <div id="resultatContainer" class="hidden">
-                <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-8"></div>
+        <!-- ── RESULTS ── -->
+        <div id="resultatContainer" class="hidden">
+            <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-8"></div>
 
-                <!-- ★ RANK REVEAL (injected by JS) ★ -->
-                <div id="rankRevealZone"></div>
-
-                <!-- Content results -->
-                <div id="resultat" class="space-y-6 mt-8"></div>
-
-                <!-- Radar Chart -->
-                <div id="radarWrap" class="relative h-[320px] sm:h-[380px] w-full mt-8 bg-zinc-950/30 rounded-2xl p-4 border border-zinc-800/50 hidden">
-                    <canvas id="radarChart"></canvas>
+            <!-- Toggle FR / WW -->
+            <div class="flex items-center justify-center mb-6">
+                <div class="flex bg-zinc-950/60 border border-zinc-800 rounded-xl p-1 gap-1">
+                    <button id="toggleWW" onclick="setZone('WW')" class="toggle-btn active px-5 py-2 rounded-lg text-sm font-bold tracking-wide">
+                        🌍 Monde
+                    </button>
+                    <button id="toggleFR" onclick="setZone('FR')" class="toggle-btn inactive px-5 py-2 rounded-lg text-sm font-bold tracking-wide">
+                        🇫🇷 France
+                    </button>
                 </div>
-
-                <!-- ★ CTA (injected by JS) ★ -->
-                <div id="ctaZone" class="mt-8"></div>
             </div>
+
+            <!-- Rank Reveal -->
+            <div id="rankRevealZone"></div>
+
+            <!-- Content results -->
+            <div id="resultat" class="space-y-6 mt-8"></div>
+
+            <!-- Radar Chart -->
+            <div id="radarWrap" class="relative h-[320px] sm:h-[380px] w-full mt-8 bg-zinc-950/30 rounded-2xl p-4 border border-zinc-800/50 hidden">
+                <canvas id="radarChart"></canvas>
+            </div>
+
+            <!-- CTA -->
+            <div id="ctaZone" class="mt-8"></div>
+
+            <!-- Recommencer -->
+            <button onclick="recommencer()" class="w-full mt-4 py-3 px-6 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-semibold hover:border-zinc-500 hover:text-white transition-all">
+                ↩ Modifier mes données
+            </button>
         </div>
     </div>
 
@@ -286,30 +303,65 @@
 </div>
 
 <script>
-// ─── Data ───────────────────────────────────────────────────────────────────
-const dataRefRaw = {
-    H: { FR: {sq:199.25,bp:134.80,dl:229.72,total:567.83}, WW: {sq:188.30,bp:125.18,dl:217.11,total:532.75} },
-    F: { FR: {sq:124.75,bp:74.47,dl:149.00,total:352.55},  WW: {sq:110.76,bp:62.36,dl:133.43,total:308.82} }
-};
-function arr(v){ return Math.round(v/2.5)*2.5; }
-const dataRef = {
-    H: { FR:{sq:arr(199.25),bp:arr(134.80),dl:arr(229.72),total:arr(567.83)}, WW:{sq:arr(188.30),bp:arr(125.18),dl:arr(217.11),total:arr(532.75)} },
-    F: { FR:{sq:arr(124.75),bp:arr(74.47), dl:arr(149.00),total:arr(352.55)}, WW:{sq:arr(110.76),bp:arr(62.36), dl:arr(133.43),total:arr(308.82)} }
+// ─── State ───────────────────────────────────────────────────────────────────
+let DB = null;           // Données embarquées inline
+let currentZone = 'WW'; // Toggle FR / WW
+let lastInputs  = null; // Derniers inputs pour re-render au toggle
+let hasRevealedOnce = false; // Confetti uniquement au premier reveal
+let myChart     = null;
+
+// ─── Données embarquées (pas de fetch nécessaire) ────────────────────────────
+DB = {"F_Junior_43_WW":{"Squat":90.0,"Bench":52.5,"Deadlift":115.0,"Total":257.5,"Goodlift":80.24},"F_Junior_47_WW":{"Squat":95.0,"Bench":52.5,"Deadlift":120.0,"Total":267.5,"Goodlift":75.72},"F_Junior_52_WW":{"Squat":105.0,"Bench":60.0,"Deadlift":127.5,"Total":290.0,"Goodlift":74.35},"F_Junior_57_WW":{"Squat":112.5,"Bench":62.5,"Deadlift":135.0,"Total":310.0,"Goodlift":73.85},"F_Junior_63_WW":{"Squat":120.0,"Bench":65.0,"Deadlift":142.5,"Total":325.0,"Goodlift":72.55},"F_Junior_69_WW":{"Squat":130.0,"Bench":72.5,"Deadlift":150.0,"Total":352.5,"Goodlift":74.19},"F_Junior_72_WW":{"Squat":112.5,"Bench":62.5,"Deadlift":135.0,"Total":310.0,"Goodlift":64.65},"F_Junior_72+_WW":{"Squat":95.0,"Bench":50.0,"Deadlift":107.5,"Total":252.5,"Goodlift":49.87},"F_Junior_75_WW":{"Squat":20.0,"Bench":52.5,"Deadlift":125.0,"Total":197.5,"Goodlift":39.15},"F_Junior_76_WW":{"Squat":137.5,"Bench":75.0,"Deadlift":155.0,"Total":370.0,"Goodlift":73.97},"F_Junior_76+_WW":{"Squat":105.0,"Bench":62.5,"Deadlift":115.0,"Total":285.0,"Goodlift":51.51},"F_Junior_84_WW":{"Squat":140.0,"Bench":72.5,"Deadlift":157.5,"Total":370.0,"Goodlift":71.01},"F_Junior_84+_WW":{"Squat":140.0,"Bench":70.0,"Deadlift":152.5,"Total":362.5,"Goodlift":65.66},"F_Masters 1_47_FR":{"Squat":95.0,"Bench":60.0,"Deadlift":117.5,"Total":272.5,"Goodlift":77.19},"F_Masters 1_47_WW":{"Squat":87.5,"Bench":50.0,"Deadlift":112.5,"Total":250.0,"Goodlift":70.91},"F_Masters 1_52_FR":{"Squat":92.5,"Bench":55.0,"Deadlift":120.0,"Total":265.0,"Goodlift":68.78},"F_Masters 1_52_WW":{"Squat":97.5,"Bench":55.0,"Deadlift":125.0,"Total":277.5,"Goodlift":71.21},"F_Masters 1_56_WW":{"Squat":90.0,"Bench":52.5,"Deadlift":102.5,"Total":245.0,"Goodlift":58.98},"F_Masters 1_57_FR":{"Squat":100.0,"Bench":62.5,"Deadlift":130.0,"Total":292.5,"Goodlift":69.61},"F_Masters 1_57_WW":{"Squat":102.5,"Bench":60.0,"Deadlift":130.0,"Total":292.5,"Goodlift":69.49},"F_Masters 1_60_WW":{"Squat":95.0,"Bench":60.0,"Deadlift":140.0,"Total":295.0,"Goodlift":67.15},"F_Masters 1_63_FR":{"Squat":107.5,"Bench":62.5,"Deadlift":127.5,"Total":300.0,"Goodlift":66.82},"F_Masters 1_63_WW":{"Squat":107.5,"Bench":62.5,"Deadlift":132.5,"Total":302.5,"Goodlift":67.19},"F_Masters 1_67.5_WW":{"Squat":120.0,"Bench":75.0,"Deadlift":140.0,"Total":335.0,"Goodlift":73.93},"F_Masters 1_69_FR":{"Squat":125.0,"Bench":70.0,"Deadlift":152.5,"Total":347.5,"Goodlift":72.8},"F_Masters 1_69_WW":{"Squat":117.5,"Bench":65.0,"Deadlift":142.5,"Total":325.0,"Goodlift":68.37},"F_Masters 1_72_FR":{"Squat":102.5,"Bench":57.5,"Deadlift":135.0,"Total":295.0,"Goodlift":61.1},"F_Masters 1_72_WW":{"Squat":107.5,"Bench":62.5,"Deadlift":135.0,"Total":305.0,"Goodlift":62.99},"F_Masters 1_75_WW":{"Squat":90.0,"Bench":62.5,"Deadlift":130.0,"Total":282.5,"Goodlift":57.8},"F_Masters 1_76_FR":{"Squat":127.5,"Bench":75.0,"Deadlift":155.0,"Total":357.5,"Goodlift":70.94},"F_Masters 1_76_WW":{"Squat":125.0,"Bench":70.0,"Deadlift":147.5,"Total":342.5,"Goodlift":68.49},"F_Masters 1_84_FR":{"Squat":120.0,"Bench":75.0,"Deadlift":142.5,"Total":340.0,"Goodlift":65.14},"F_Masters 1_84_WW":{"Squat":122.5,"Bench":67.5,"Deadlift":145.0,"Total":335.0,"Goodlift":64.39},"F_Masters 1_84+_FR":{"Squat":110.0,"Bench":70.0,"Deadlift":125.0,"Total":305.0,"Goodlift":55.2},"F_Masters 1_84+_WW":{"Squat":130.0,"Bench":72.5,"Deadlift":152.5,"Total":355.0,"Goodlift":63.21},"F_Masters 1_90+_WW":{"Squat":92.5,"Bench":57.5,"Deadlift":117.5,"Total":267.5,"Goodlift":48.82},"F_Masters 2_47_FR":{"Squat":82.5,"Bench":52.5,"Deadlift":112.5,"Total":250.0,"Goodlift":71.25},"F_Masters 2_47_WW":{"Squat":82.5,"Bench":47.5,"Deadlift":107.5,"Total":237.5,"Goodlift":67.95},"F_Masters 2_52_FR":{"Squat":82.5,"Bench":62.5,"Deadlift":110.0,"Total":255.0,"Goodlift":65.5},"F_Masters 2_52_WW":{"Squat":87.5,"Bench":52.5,"Deadlift":115.0,"Total":255.0,"Goodlift":65.68},"F_Masters 2_57_FR":{"Squat":85.0,"Bench":55.0,"Deadlift":115.0,"Total":255.0,"Goodlift":60.64},"F_Masters 2_57_WW":{"Squat":92.5,"Bench":55.0,"Deadlift":120.0,"Total":267.5,"Goodlift":63.96},"F_Masters 2_63_FR":{"Squat":110.0,"Bench":67.5,"Deadlift":137.5,"Total":312.5,"Goodlift":70.19},"F_Masters 2_63_WW":{"Squat":95.0,"Bench":55.0,"Deadlift":122.5,"Total":272.5,"Goodlift":60.89},"F_Masters 2_69_FR":{"Squat":122.5,"Bench":70.0,"Deadlift":127.5,"Total":320.0,"Goodlift":67.89},"F_Masters 2_69_WW":{"Squat":107.5,"Bench":60.0,"Deadlift":132.5,"Total":300.0,"Goodlift":63.08},"F_Masters 2_72_FR":{"Squat":110.0,"Bench":55.0,"Deadlift":137.5,"Total":302.5,"Goodlift":63.07},"F_Masters 2_72_WW":{"Squat":95.0,"Bench":60.0,"Deadlift":125.0,"Total":277.5,"Goodlift":57.69},"F_Masters 2_76_FR":{"Squat":137.5,"Bench":75.0,"Deadlift":182.5,"Total":397.5,"Goodlift":78.52},"F_Masters 2_76_WW":{"Squat":112.5,"Bench":62.5,"Deadlift":137.5,"Total":312.5,"Goodlift":62.72},"F_Masters 2_84_FR":{"Squat":105.0,"Bench":52.5,"Deadlift":132.5,"Total":290.0,"Goodlift":56.02},"F_Masters 2_84_WW":{"Squat":112.5,"Bench":65.0,"Deadlift":140.0,"Total":317.5,"Goodlift":60.68},"F_Masters 2_84+_FR":{"Squat":115.0,"Bench":62.5,"Deadlift":137.5,"Total":315.0,"Goodlift":57.73},"F_Masters 2_84+_WW":{"Squat":120.0,"Bench":70.0,"Deadlift":145.0,"Total":335.0,"Goodlift":59.75},"F_Masters 2_90_WW":{"Squat":50.0,"Bench":30.0,"Deadlift":110.0,"Total":190.0,"Goodlift":36.01},"F_Masters 3_47_WW":{"Squat":72.5,"Bench":45.0,"Deadlift":105.0,"Total":222.5,"Goodlift":63.68},"F_Masters 3_52_FR":{"Squat":55.0,"Bench":37.5,"Deadlift":80.0,"Total":172.5,"Goodlift":45.09},"F_Masters 3_52_WW":{"Squat":82.5,"Bench":50.0,"Deadlift":112.5,"Total":242.5,"Goodlift":63.13},"F_Masters 3_57_FR":{"Squat":82.5,"Bench":52.5,"Deadlift":125.0,"Total":257.5,"Goodlift":61.32},"F_Masters 3_57_WW":{"Squat":82.5,"Bench":47.5,"Deadlift":110.0,"Total":240.0,"Goodlift":57.67},"F_Masters 3_63_FR":{"Squat":87.5,"Bench":52.5,"Deadlift":117.5,"Total":260.0,"Goodlift":58.24},"F_Masters 3_63_WW":{"Squat":87.5,"Bench":50.0,"Deadlift":117.5,"Total":255.0,"Goodlift":56.74},"F_Masters 3_69_FR":{"Squat":85.0,"Bench":57.5,"Deadlift":120.0,"Total":260.0,"Goodlift":54.6},"F_Masters 3_69_WW":{"Squat":90.0,"Bench":52.5,"Deadlift":120.0,"Total":262.5,"Goodlift":55.47},"F_Masters 3_72_FR":{"Squat":82.5,"Bench":52.5,"Deadlift":115.0,"Total":250.0,"Goodlift":52.7},"F_Masters 3_72_WW":{"Squat":85.0,"Bench":50.0,"Deadlift":112.5,"Total":247.5,"Goodlift":51.3},"F_Masters 3_76_FR":{"Squat":95.0,"Bench":62.5,"Deadlift":125.0,"Total":282.5,"Goodlift":56.19},"F_Masters 3_76_WW":{"Squat":100.0,"Bench":55.0,"Deadlift":125.0,"Total":280.0,"Goodlift":56.22},"F_Masters 3_84_FR":{"Squat":87.5,"Bench":55.0,"Deadlift":110.0,"Total":252.5,"Goodlift":47.8},"F_Masters 3_84_WW":{"Squat":100.0,"Bench":57.5,"Deadlift":127.5,"Total":287.5,"Goodlift":55.13},"F_Masters 3_84+_WW":{"Squat":105.0,"Bench":60.0,"Deadlift":132.5,"Total":297.5,"Goodlift":53.69},"F_Open_+_WW":{"Squat":102.5,"Bench":57.5,"Deadlift":122.5,"Total":282.5,"Goodlift":57.7},"F_Open_43_FR":{"Squat":102.5,"Bench":60.0,"Deadlift":117.5,"Total":280.0,"Goodlift":90.58},"F_Open_43_WW":{"Squat":57.5,"Bench":35.0,"Deadlift":77.5,"Total":170.0,"Goodlift":54.51},"F_Open_44_WW":{"Squat":60.0,"Bench":37.5,"Deadlift":62.5,"Total":160.0,"Goodlift":47.53},"F_Open_47_FR":{"Squat":125.0,"Bench":72.5,"Deadlift":145.0,"Total":342.5,"Goodlift":96.18},"F_Open_47_WW":{"Squat":87.5,"Bench":52.5,"Deadlift":112.5,"Total":252.5,"Goodlift":71.81},"F_Open_48_WW":{"Squat":75.0,"Bench":45.0,"Deadlift":105.0,"Total":225.0,"Goodlift":61.83},"F_Open_52_FR":{"Squat":132.5,"Bench":77.5,"Deadlift":157.5,"Total":367.5,"Goodlift":94.18},"F_Open_52_WW":{"Squat":100.0,"Bench":57.5,"Deadlift":122.5,"Total":280.0,"Goodlift":72.08},"F_Open_56_WW":{"Squat":85.0,"Bench":57.5,"Deadlift":115.0,"Total":257.5,"Goodlift":62.39},"F_Open_57_FR":{"Squat":142.5,"Bench":82.5,"Deadlift":165.0,"Total":392.5,"Goodlift":92.54},"F_Open_57_WW":{"Squat":107.5,"Bench":62.5,"Deadlift":130.0,"Total":300.0,"Goodlift":71.66},"F_Open_57+_WW":{"Squat":115.0,"Bench":65.0,"Deadlift":137.5,"Total":317.5,"Goodlift":67.96},"F_Open_59_WW":{"Squat":80.0,"Bench":42.5,"Deadlift":97.5,"Total":220.0,"Goodlift":52.32},"F_Open_60_WW":{"Squat":87.5,"Bench":55.0,"Deadlift":120.0,"Total":262.5,"Goodlift":60.53},"F_Open_63_FR":{"Squat":145.0,"Bench":85.0,"Deadlift":170.0,"Total":400.0,"Goodlift":89.11},"F_Open_63_WW":{"Squat":115.0,"Bench":65.0,"Deadlift":137.5,"Total":317.5,"Goodlift":70.6},"F_Open_63+_WW":{"Squat":95.0,"Bench":55.0,"Deadlift":112.5,"Total":262.5,"Goodlift":53.7},"F_Open_66_WW":{"Squat":77.5,"Bench":40.0,"Deadlift":90.0,"Total":210.0,"Goodlift":45.0},"F_Open_67.5_WW":{"Squat":95.0,"Bench":62.5,"Deadlift":122.5,"Total":277.5,"Goodlift":59.22},"F_Open_69_FR":{"Squat":167.5,"Bench":92.5,"Deadlift":187.5,"Total":447.5,"Goodlift":93.43},"F_Open_69_WW":{"Squat":127.5,"Bench":70.0,"Deadlift":150.0,"Total":350.0,"Goodlift":73.52},"F_Open_69+_WW":{"Squat":115.0,"Bench":62.5,"Deadlift":140.0,"Total":320.0,"Goodlift":62.12},"F_Open_72_FR":{"Squat":142.5,"Bench":82.5,"Deadlift":160.0,"Total":382.5,"Goodlift":80.31},"F_Open_72_WW":{"Squat":117.5,"Bench":67.5,"Deadlift":140.0,"Total":322.5,"Goodlift":66.74},"F_Open_72+_WW":{"Squat":115.0,"Bench":62.5,"Deadlift":132.5,"Total":310.0,"Goodlift":59.77},"F_Open_74_WW":{"Squat":110.0,"Bench":65.0,"Deadlift":125.0,"Total":300.0,"Goodlift":61.66},"F_Open_75_WW":{"Squat":102.5,"Bench":67.5,"Deadlift":130.0,"Total":300.0,"Goodlift":61.41},"F_Open_75+_WW":{"Squat":127.5,"Bench":75.0,"Deadlift":155.0,"Total":355.0,"Goodlift":67.71},"F_Open_76_FR":{"Squat":170.0,"Bench":100.0,"Deadlift":197.5,"Total":467.5,"Goodlift":92.95},"F_Open_76_WW":{"Squat":135.0,"Bench":75.0,"Deadlift":157.5,"Total":367.5,"Goodlift":73.44},"F_Open_76+_WW":{"Squat":137.5,"Bench":72.5,"Deadlift":145.0,"Total":355.0,"Goodlift":66.35},"F_Open_82.5_WW":{"Squat":105.0,"Bench":65.0,"Deadlift":130.0,"Total":302.5,"Goodlift":58.47},"F_Open_82.5+_WW":{"Squat":135.0,"Bench":85.0,"Deadlift":157.5,"Total":377.5,"Goodlift":67.78},"F_Open_84_FR":{"Squat":160.0,"Bench":90.0,"Deadlift":187.5,"Total":437.5,"Goodlift":83.36},"F_Open_84_WW":{"Squat":132.5,"Bench":72.5,"Deadlift":152.5,"Total":357.5,"Goodlift":68.96},"F_Open_84+_FR":{"Squat":227.5,"Bench":142.5,"Deadlift":222.5,"Total":590.0,"Goodlift":99.29},"F_Open_84+_WW":{"Squat":145.0,"Bench":77.5,"Deadlift":160.0,"Total":382.5,"Goodlift":67.98},"F_Open_90_WW":{"Squat":102.5,"Bench":62.5,"Deadlift":130.0,"Total":295.0,"Goodlift":54.48},"F_Open_90+_WW":{"Squat":97.5,"Bench":65.0,"Deadlift":127.5,"Total":292.5,"Goodlift":43.17},"F_Sub-Junior_43_WW":{"Squat":67.5,"Bench":35.0,"Deadlift":87.5,"Total":190.0,"Goodlift":61.53},"F_Sub-Junior_47_WW":{"Squat":82.5,"Bench":40.0,"Deadlift":100.0,"Total":222.5,"Goodlift":63.76},"F_Sub-Junior_48_WW":{"Squat":77.5,"Bench":30.0,"Deadlift":85.0,"Total":192.5,"Goodlift":53.93},"F_Sub-Junior_52_WW":{"Squat":92.5,"Bench":50.0,"Deadlift":112.5,"Total":255.0,"Goodlift":66.65},"F_Sub-Junior_57_WW":{"Squat":97.5,"Bench":52.5,"Deadlift":112.5,"Total":265.0,"Goodlift":63.3},"F_Sub-Junior_63_WW":{"Squat":107.5,"Bench":57.5,"Deadlift":122.5,"Total":290.0,"Goodlift":64.59},"F_Sub-Junior_63+_WW":{"Squat":105.0,"Bench":55.0,"Deadlift":127.5,"Total":290.0,"Goodlift":56.52},"F_Sub-Junior_69_WW":{"Squat":125.0,"Bench":67.5,"Deadlift":140.0,"Total":332.5,"Goodlift":70.15},"F_Sub-Junior_72_WW":{"Squat":102.5,"Bench":57.5,"Deadlift":122.5,"Total":282.5,"Goodlift":59.18},"F_Sub-Junior_72+_WW":{"Squat":95.0,"Bench":52.5,"Deadlift":110.0,"Total":257.5,"Goodlift":49.0},"F_Sub-Junior_76_WW":{"Squat":130.0,"Bench":70.0,"Deadlift":147.5,"Total":347.5,"Goodlift":69.6},"F_Sub-Junior_84_WW":{"Squat":127.5,"Bench":67.5,"Deadlift":147.5,"Total":345.0,"Goodlift":66.22},"F_Sub-Junior_84+_WW":{"Squat":145.0,"Bench":72.5,"Deadlift":147.5,"Total":367.5,"Goodlift":64.65},"M_Junior_100_WW":{"Squat":157.5,"Bench":105.0,"Deadlift":160.0,"Total":422.5,"Goodlift":55.42},"M_Junior_105_WW":{"Squat":225.0,"Bench":142.5,"Deadlift":250.0,"Total":617.5,"Goodlift":77.65},"M_Junior_120_WW":{"Squat":235.0,"Bench":147.5,"Deadlift":257.5,"Total":640.0,"Goodlift":76.26},"M_Junior_120+_WW":{"Squat":240.0,"Bench":152.5,"Deadlift":247.5,"Total":642.5,"Goodlift":71.51},"M_Junior_125_WW":{"Squat":250.0,"Bench":165.0,"Deadlift":260.0,"Total":675.0,"Goodlift":78.16},"M_Junior_53_WW":{"Squat":125.0,"Bench":80.0,"Deadlift":150.0,"Total":355.0,"Goodlift":63.06},"M_Junior_59_WW":{"Squat":147.5,"Bench":95.0,"Deadlift":182.5,"Total":422.5,"Goodlift":70.67},"M_Junior_66_WW":{"Squat":170.0,"Bench":107.5,"Deadlift":200.0,"Total":475.0,"Goodlift":74.98},"M_Junior_74_WW":{"Squat":182.5,"Bench":117.5,"Deadlift":215.0,"Total":515.0,"Goodlift":76.45},"M_Junior_75_WW":{"Squat":137.5,"Bench":95.0,"Deadlift":172.5,"Total":405.0,"Goodlift":60.81},"M_Junior_82.5_WW":{"Squat":150.0,"Bench":107.5,"Deadlift":205.0,"Total":462.5,"Goodlift":65.71},"M_Junior_83_WW":{"Squat":197.5,"Bench":127.5,"Deadlift":227.5,"Total":550.0,"Goodlift":77.3},"M_Junior_83+_WW":{"Squat":222.5,"Bench":150.0,"Deadlift":245.0,"Total":617.5,"Goodlift":77.2},"M_Junior_87_WW":{"Squat":150.0,"Bench":95.0,"Deadlift":187.5,"Total":430.0,"Goodlift":63.89},"M_Junior_90_WW":{"Squat":180.0,"Bench":112.5,"Deadlift":190.0,"Total":480.0,"Goodlift":64.76},"M_Junior_93_WW":{"Squat":212.5,"Bench":135.0,"Deadlift":240.0,"Total":585.0,"Goodlift":77.66},"M_Masters 1_100_WW":{"Squat":195.0,"Bench":125.0,"Deadlift":217.5,"Total":537.5,"Goodlift":69.53},"M_Masters 1_105_FR":{"Squat":215.0,"Bench":152.5,"Deadlift":250.0,"Total":617.5,"Goodlift":77.4},"M_Masters 1_105_WW":{"Squat":207.5,"Bench":142.5,"Deadlift":232.5,"Total":582.5,"Goodlift":73.08},"M_Masters 1_110_WW":{"Squat":215.0,"Bench":147.5,"Deadlift":260.0,"Total":622.5,"Goodlift":76.96},"M_Masters 1_120_FR":{"Squat":225.0,"Bench":172.5,"Deadlift":247.5,"Total":642.5,"Goodlift":75.79},"M_Masters 1_120_WW":{"Squat":222.5,"Bench":155.0,"Deadlift":242.5,"Total":620.0,"Goodlift":73.57},"M_Masters 1_120+_FR":{"Squat":237.5,"Bench":167.5,"Deadlift":247.5,"Total":652.5,"Goodlift":72.35},"M_Masters 1_120+_WW":{"Squat":237.5,"Bench":162.5,"Deadlift":252.5,"Total":652.5,"Goodlift":72.01},"M_Masters 1_125_WW":{"Squat":212.5,"Bench":160.0,"Deadlift":230.0,"Total":605.0,"Goodlift":70.22},"M_Masters 1_56_WW":{"Squat":215.0,"Bench":125.0,"Deadlift":232.5,"Total":572.5,"Goodlift":97.42},"M_Masters 1_59_FR":{"Squat":135.0,"Bench":95.0,"Deadlift":160.0,"Total":390.0,"Goodlift":64.81},"M_Masters 1_59_WW":{"Squat":137.5,"Bench":92.5,"Deadlift":170.0,"Total":397.5,"Goodlift":66.5},"M_Masters 1_60_WW":{"Squat":125.0,"Bench":92.5,"Deadlift":132.5,"Total":350.0,"Goodlift":58.66},"M_Masters 1_66_FR":{"Squat":155.0,"Bench":112.5,"Deadlift":190.0,"Total":457.5,"Goodlift":71.77},"M_Masters 1_66_WW":{"Squat":157.5,"Bench":107.5,"Deadlift":192.5,"Total":457.5,"Goodlift":71.97},"M_Masters 1_67.5_WW":{"Squat":145.0,"Bench":102.5,"Deadlift":197.5,"Total":445.0,"Goodlift":69.2},"M_Masters 1_74_FR":{"Squat":172.5,"Bench":117.5,"Deadlift":202.5,"Total":492.5,"Goodlift":73.14},"M_Masters 1_74_WW":{"Squat":167.5,"Bench":115.0,"Deadlift":200.0,"Total":482.5,"Goodlift":71.62},"M_Masters 1_75_WW":{"Squat":125.0,"Bench":100.0,"Deadlift":155.0,"Total":380.0,"Goodlift":56.8},"M_Masters 1_82.5_WW":{"Squat":132.5,"Bench":92.5,"Deadlift":122.5,"Total":347.5,"Goodlift":49.47},"M_Masters 1_83_FR":{"Squat":197.5,"Bench":135.0,"Deadlift":230.0,"Total":562.5,"Goodlift":78.26},"M_Masters 1_83_WW":{"Squat":180.0,"Bench":122.5,"Deadlift":212.5,"Total":515.0,"Goodlift":72.12},"M_Masters 1_90_WW":{"Squat":165.0,"Bench":132.5,"Deadlift":162.5,"Total":460.0,"Goodlift":62.02},"M_Masters 1_93_FR":{"Squat":217.5,"Bench":147.5,"Deadlift":240.0,"Total":605.0,"Goodlift":79.89},"M_Masters 1_93_WW":{"Squat":195.0,"Bench":132.5,"Deadlift":222.5,"Total":550.0,"Goodlift":72.96},"M_Masters 2_100_WW":{"Squat":120.0,"Bench":90.0,"Deadlift":140.0,"Total":350.0,"Goodlift":45.88},"M_Masters 2_105_FR":{"Squat":205.0,"Bench":137.5,"Deadlift":242.5,"Total":585.0,"Goodlift":73.09},"M_Masters 2_105_WW":{"Squat":187.5,"Bench":132.5,"Deadlift":215.0,"Total":535.0,"Goodlift":67.2},"M_Masters 2_110_WW":{"Squat":165.0,"Bench":130.0,"Deadlift":182.5,"Total":477.5,"Goodlift":58.24},"M_Masters 2_120_FR":{"Squat":215.0,"Bench":150.0,"Deadlift":247.5,"Total":615.0,"Goodlift":72.95},"M_Masters 2_120_WW":{"Squat":207.5,"Bench":145.0,"Deadlift":230.0,"Total":582.5,"Goodlift":69.22},"M_Masters 2_120+_FR":{"Squat":202.5,"Bench":157.5,"Deadlift":247.5,"Total":607.5,"Goodlift":68.54},"M_Masters 2_120+_WW":{"Squat":220.0,"Bench":155.0,"Deadlift":237.5,"Total":610.0,"Goodlift":67.82},"M_Masters 2_52_WW":{"Squat":80.0,"Bench":57.5,"Deadlift":110.0,"Total":247.5,"Goodlift":44.26},"M_Masters 2_56_WW":{"Squat":155.0,"Bench":125.0,"Deadlift":160.0,"Total":440.0,"Goodlift":75.86},"M_Masters 2_59_FR":{"Squat":110.0,"Bench":85.0,"Deadlift":152.5,"Total":350.0,"Goodlift":58.59},"M_Masters 2_59_WW":{"Squat":125.0,"Bench":87.5,"Deadlift":157.5,"Total":372.5,"Goodlift":62.23},"M_Masters 2_60_WW":{"Squat":135.0,"Bench":102.5,"Deadlift":160.0,"Total":395.0,"Goodlift":65.03},"M_Masters 2_66_FR":{"Squat":157.5,"Bench":112.5,"Deadlift":190.0,"Total":460.0,"Goodlift":72.2},"M_Masters 2_66_WW":{"Squat":140.0,"Bench":97.5,"Deadlift":172.5,"Total":410.0,"Goodlift":64.62},"M_Masters 2_74_FR":{"Squat":152.5,"Bench":112.5,"Deadlift":195.0,"Total":460.0,"Goodlift":68.02},"M_Masters 2_74_WW":{"Squat":155.0,"Bench":105.0,"Deadlift":185.0,"Total":447.5,"Goodlift":66.31},"M_Masters 2_75_WW":{"Squat":170.0,"Bench":125.0,"Deadlift":200.0,"Total":497.5,"Goodlift":74.72},"M_Masters 2_82.5_WW":{"Squat":160.0,"Bench":117.5,"Deadlift":205.0,"Total":485.0,"Goodlift":68.65},"M_Masters 2_83_FR":{"Squat":187.5,"Bench":127.5,"Deadlift":212.5,"Total":525.0,"Goodlift":73.37},"M_Masters 2_83_WW":{"Squat":172.5,"Bench":115.0,"Deadlift":202.5,"Total":490.0,"Goodlift":68.64},"M_Masters 2_90_WW":{"Squat":150.0,"Bench":115.0,"Deadlift":175.0,"Total":440.0,"Goodlift":60.22},"M_Masters 2_93_FR":{"Squat":197.5,"Bench":135.0,"Deadlift":220.0,"Total":552.5,"Goodlift":73.22},"M_Masters 2_93_WW":{"Squat":180.0,"Bench":122.5,"Deadlift":207.5,"Total":512.5,"Goodlift":67.86},"M_Masters 3_105_FR":{"Squat":197.5,"Bench":115.0,"Deadlift":227.5,"Total":537.5,"Goodlift":67.6},"M_Masters 3_105_WW":{"Squat":167.5,"Bench":120.0,"Deadlift":200.0,"Total":487.5,"Goodlift":61.49},"M_Masters 3_110_WW":{"Squat":75.0,"Bench":80.0,"Deadlift":120.0,"Total":275.0,"Goodlift":34.31},"M_Masters 3_120_FR":{"Squat":192.5,"Bench":140.0,"Deadlift":222.5,"Total":552.5,"Goodlift":66.05},"M_Masters 3_120_WW":{"Squat":182.5,"Bench":135.0,"Deadlift":212.5,"Total":530.0,"Goodlift":63.18},"M_Masters 3_120+_FR":{"Squat":210.0,"Bench":160.0,"Deadlift":170.0,"Total":540.0,"Goodlift":58.76},"M_Masters 3_120+_WW":{"Squat":195.0,"Bench":132.5,"Deadlift":222.5,"Total":550.0,"Goodlift":62.02},"M_Masters 3_59_FR":{"Squat":122.5,"Bench":80.0,"Deadlift":140.0,"Total":342.5,"Goodlift":57.35},"M_Masters 3_59_WW":{"Squat":112.5,"Bench":77.5,"Deadlift":145.0,"Total":335.0,"Goodlift":56.2},"M_Masters 3_60_WW":{"Squat":107.5,"Bench":100.0,"Deadlift":140.0,"Total":347.5,"Goodlift":58.21},"M_Masters 3_66_FR":{"Squat":125.0,"Bench":82.5,"Deadlift":160.0,"Total":367.5,"Goodlift":57.78},"M_Masters 3_66_WW":{"Squat":125.0,"Bench":85.0,"Deadlift":152.5,"Total":362.5,"Goodlift":57.19},"M_Masters 3_74_FR":{"Squat":145.0,"Bench":97.5,"Deadlift":175.0,"Total":417.5,"Goodlift":61.69},"M_Masters 3_74_WW":{"Squat":140.0,"Bench":92.5,"Deadlift":167.5,"Total":400.0,"Goodlift":59.41},"M_Masters 3_75_WW":{"Squat":90.0,"Bench":87.5,"Deadlift":112.5,"Total":290.0,"Goodlift":42.62},"M_Masters 3_82.5_WW":{"Squat":177.5,"Bench":105.0,"Deadlift":195.0,"Total":477.5,"Goodlift":66.88},"M_Masters 3_83_FR":{"Squat":152.5,"Bench":107.5,"Deadlift":190.0,"Total":447.5,"Goodlift":62.76},"M_Masters 3_83_WW":{"Squat":150.0,"Bench":102.5,"Deadlift":180.0,"Total":432.5,"Goodlift":60.58},"M_Masters 3_90_WW":{"Squat":155.0,"Bench":122.5,"Deadlift":205.0,"Total":482.5,"Goodlift":64.39},"M_Masters 3_93_FR":{"Squat":182.5,"Bench":112.5,"Deadlift":215.0,"Total":512.5,"Goodlift":68.2},"M_Masters 3_93_WW":{"Squat":162.5,"Bench":110.0,"Deadlift":190.0,"Total":465.0,"Goodlift":61.8},"M_Open_+_WW":{"Squat":175.0,"Bench":117.5,"Deadlift":200.0,"Total":495.0,"Goodlift":63.95},"M_Open_100_WW":{"Squat":190.0,"Bench":142.5,"Deadlift":225.0,"Total":557.5,"Goodlift":72.09},"M_Open_100+_WW":{"Squat":257.5,"Bench":185.0,"Deadlift":267.5,"Total":710.0,"Goodlift":84.35},"M_Open_105_FR":{"Squat":282.5,"Bench":185.0,"Deadlift":312.5,"Total":780.0,"Goodlift":97.06},"M_Open_105_WW":{"Squat":222.5,"Bench":147.5,"Deadlift":250.0,"Total":617.5,"Goodlift":77.65},"M_Open_105+_WW":{"Squat":232.5,"Bench":147.5,"Deadlift":265.0,"Total":645.0,"Goodlift":74.94},"M_Open_110_WW":{"Squat":202.5,"Bench":140.0,"Deadlift":232.5,"Total":575.0,"Goodlift":70.41},"M_Open_110+_WW":{"Squat":410.0,"Bench":260.0,"Deadlift":370.0,"Total":1037.5,"Goodlift":107.6},"M_Open_120_FR":{"Squat":302.5,"Bench":200.0,"Deadlift":322.5,"Total":825.0,"Goodlift":97.16},"M_Open_120_WW":{"Squat":237.5,"Bench":160.0,"Deadlift":260.0,"Total":657.5,"Goodlift":78.05},"M_Open_120+_FR":{"Squat":332.5,"Bench":222.5,"Deadlift":320.0,"Total":872.5,"Goodlift":93.29},"M_Open_120+_WW":{"Squat":257.5,"Bench":172.5,"Deadlift":267.5,"Total":697.5,"Goodlift":76.46},"M_Open_125_WW":{"Squat":187.5,"Bench":177.5,"Deadlift":207.5,"Total":572.5,"Goodlift":66.7},"M_Open_125+_WW":{"Squat":197.5,"Bench":177.5,"Deadlift":237.5,"Total":610.0,"Goodlift":71.72},"M_Open_140_WW":{"Squat":197.5,"Bench":92.5,"Deadlift":225.0,"Total":515.0,"Goodlift":58.56},"M_Open_40_WW":{"Squat":35.0,"Bench":30.0,"Deadlift":67.5,"Total":132.5,"Goodlift":30.18},"M_Open_43_WW":{"Squat":52.5,"Bench":32.5,"Deadlift":72.5,"Total":160.0,"Goodlift":34.41},"M_Open_48_WW":{"Squat":70.0,"Bench":42.5,"Deadlift":95.0,"Total":207.5,"Goodlift":39.08},"M_Open_52_WW":{"Squat":202.5,"Bench":140.0,"Deadlift":135.0,"Total":480.0,"Goodlift":86.19},"M_Open_53_WW":{"Squat":87.5,"Bench":60.0,"Deadlift":112.5,"Total":257.5,"Goodlift":45.94},"M_Open_56_WW":{"Squat":162.5,"Bench":102.5,"Deadlift":190.0,"Total":455.0,"Goodlift":77.94},"M_Open_59_FR":{"Squat":185.0,"Bench":112.5,"Deadlift":215.0,"Total":515.0,"Goodlift":85.67},"M_Open_59_WW":{"Squat":140.0,"Bench":95.0,"Deadlift":170.0,"Total":405.0,"Goodlift":67.74},"M_Open_60_WW":{"Squat":132.5,"Bench":97.5,"Deadlift":167.5,"Total":400.0,"Goodlift":65.88},"M_Open_66_FR":{"Squat":205.0,"Bench":135.0,"Deadlift":235.0,"Total":575.0,"Goodlift":89.87},"M_Open_66_WW":{"Squat":162.5,"Bench":110.0,"Deadlift":195.0,"Total":465.0,"Goodlift":73.27},"M_Open_67.5_WW":{"Squat":147.5,"Bench":107.5,"Deadlift":187.5,"Total":442.5,"Goodlift":69.16},"M_Open_74_FR":{"Squat":230.0,"Bench":157.5,"Deadlift":265.0,"Total":652.5,"Goodlift":96.25},"M_Open_74_WW":{"Squat":180.0,"Bench":120.0,"Deadlift":212.5,"Total":510.0,"Goodlift":75.65},"M_Open_75_FR":{"Squat":230.0,"Bench":200.0,"Deadlift":240.0,"Total":670.0,"Goodlift":99.92},"M_Open_75_WW":{"Squat":155.0,"Bench":112.5,"Deadlift":192.5,"Total":462.5,"Goodlift":68.01},"M_Open_82.5_WW":{"Squat":170.0,"Bench":122.5,"Deadlift":205.0,"Total":500.0,"Goodlift":70.49},"M_Open_83_FR":{"Squat":247.5,"Bench":160.0,"Deadlift":282.5,"Total":687.5,"Goodlift":95.86},"M_Open_83_WW":{"Squat":195.0,"Bench":130.0,"Deadlift":225.0,"Total":547.5,"Goodlift":76.77},"M_Open_83+_WW":{"Squat":235.0,"Bench":162.5,"Deadlift":257.5,"Total":657.5,"Goodlift":81.77},"M_Open_85_WW":{"Squat":150.0,"Bench":105.0,"Deadlift":190.0,"Total":445.0,"Goodlift":64.47},"M_Open_85+_WW":{"Squat":197.5,"Bench":130.0,"Deadlift":230.0,"Total":557.5,"Goodlift":71.65},"M_Open_90_WW":{"Squat":170.0,"Bench":132.5,"Deadlift":202.5,"Total":502.5,"Goodlift":67.61},"M_Open_93_FR":{"Squat":257.5,"Bench":172.5,"Deadlift":287.5,"Total":717.5,"Goodlift":94.38},"M_Open_93_WW":{"Squat":207.5,"Bench":137.5,"Deadlift":237.5,"Total":582.5,"Goodlift":77.27},"M_Open_93+_WW":{"Squat":215.0,"Bench":140.0,"Deadlift":240.0,"Total":595.0,"Goodlift":72.39},"M_Sub-Junior_105_WW":{"Squat":197.5,"Bench":122.5,"Deadlift":225.0,"Total":542.5,"Goodlift":68.63},"M_Sub-Junior_105+_WW":{"Squat":180.0,"Bench":117.5,"Deadlift":207.5,"Total":505.0,"Goodlift":58.6},"M_Sub-Junior_120_WW":{"Squat":205.0,"Bench":125.0,"Deadlift":227.5,"Total":557.5,"Goodlift":66.95},"M_Sub-Junior_120+_WW":{"Squat":207.5,"Bench":122.5,"Deadlift":217.5,"Total":547.5,"Goodlift":61.45},"M_Sub-Junior_53_WW":{"Squat":102.5,"Bench":65.0,"Deadlift":120.0,"Total":285.0,"Goodlift":51.53},"M_Sub-Junior_59_WW":{"Squat":127.5,"Bench":80.0,"Deadlift":155.0,"Total":362.5,"Goodlift":60.88},"M_Sub-Junior_66_WW":{"Squat":145.0,"Bench":90.0,"Deadlift":175.0,"Total":410.0,"Goodlift":64.89},"M_Sub-Junior_67.5_WW":{"Squat":115.0,"Bench":57.5,"Deadlift":120.0,"Total":292.5,"Goodlift":45.74},"M_Sub-Junior_74_WW":{"Squat":162.5,"Bench":100.0,"Deadlift":195.0,"Total":457.5,"Goodlift":68.31},"M_Sub-Junior_75_WW":{"Squat":105.0,"Bench":70.0,"Deadlift":135.0,"Total":310.0,"Goodlift":46.16},"M_Sub-Junior_83_WW":{"Squat":177.5,"Bench":110.0,"Deadlift":205.0,"Total":495.0,"Goodlift":69.53},"M_Sub-Junior_93_WW":{"Squat":187.5,"Bench":117.5,"Deadlift":215.0,"Total":522.5,"Goodlift":69.61}};
+console.log('[Forceux] DB chargée —', Object.keys(DB).length, 'entrées');
+
+// ─── Mapping âge → division ───────────────────────────────────────────────────
+function getDivision(age) {
+    const a = parseInt(age);
+    if (a < 18)  return 'Sub-Junior';
+    if (a <= 23) return 'Junior';
+    if (a <= 39) return 'Open';
+    if (a <= 49) return 'Masters 1';
+    if (a <= 59) return 'Masters 2';
+    return 'Masters 3';
+}
+
+// ─── Catégories de poids par genre ───────────────────────────────────────────
+// On cherche la catégorie la plus proche par le bas (comme en compétition)
+const WEIGHT_CATS = {
+    M: [53,59,66,74,83,93,105,120,'120+'],
+    F: [43,47,52,57,63,69,76,84,'84+']
 };
 
-// ─── Rank system ─────────────────────────────────────────────────────────────
+function getWeightCat(sexe, poids) {
+    const cats = WEIGHT_CATS[sexe];
+    const p = parseFloat(poids);
+    for (let i = 0; i < cats.length; i++) {
+        const cat = cats[i];
+        if (cat === cats[cats.length - 1]) return String(cat); // dernière catégorie = open+
+        if (p <= parseFloat(cat)) return String(cat);
+    }
+    return String(cats[cats.length - 1]);
+}
+
+// ─── Lookup JSON ─────────────────────────────────────────────────────────────
+function lookup(sexe, division, poidsCat, zone) {
+    const key = `${sexe}_${division}_${poidsCat}_${zone}`;
+    return DB[key] || null;
+}
+
+// ─── Rang System ─────────────────────────────────────────────────────────────
 const RANKS = [
-    { key:'novice',       label:'Novice',        icon:'🌱', minPct:0,        maxPct:60,       colorClass:'rank-glow-gray',    hex:'#a1a1aa', tailwind:'zinc',    ctaGrad:'from-zinc-800 to-zinc-900',    btnGrad:'from-zinc-600 to-zinc-700',      btnGlow:'rgba(161,161,170,0.3)',   headline:'Découvre ton potentiel',                 body:"Chaque champion a commencé quelque part. Rejoins Forceux Académie et construis des bases en béton.",                          btn:'Commencer ma progression →' },
-    { key:'intermediaire',label:'Intermédiaire', icon:'⚡', minPct:60,       maxPct:86,       colorClass:'rank-glow-blue',    hex:'#60a5fa', tailwind:'blue',    ctaGrad:'from-blue-950 to-zinc-900',    btnGrad:'from-blue-600 to-blue-700',      btnGlow:'rgba(96,165,250,0.35)',   headline:'Tu es sur la bonne trajectoire',         body:"Tes bases sont solides. Forceux Académie t'apprend à t'autocoacher pour franchir le cap suivant sans programme générique.",               btn:'Accélérer ma progression →' },
-    { key:'avance',       label:'Avancé',        icon:'🔥', minPct:86,       maxPct:106,      colorClass:'rank-glow-amber',   hex:'#fbbf24', tailwind:'amber',   ctaGrad:'from-amber-950 to-zinc-900',   btnGrad:'from-amber-500 to-amber-600',    btnGlow:'rgba(251,191,36,0.4)',    headline:'Tu es au-dessus de la moyenne mondiale', body:"Tu dépasses la plupart des compétiteurs. Forceux Académie te donne les outils pour t'autocoacher et viser le top 20 %.",                    btn:'Franchir le cap Expert →' },
-    { key:'expert',       label:'Expert',        icon:'🏆', minPct:106,      maxPct:126,      colorClass:'rank-glow-red',     hex:'#f87171', tailwind:'red',     ctaGrad:'from-red-950 to-zinc-900',     btnGrad:'from-red-600 to-red-700',        btnGlow:'rgba(248,113,113,0.45)', headline:'Tu fais partie des meilleurs',           body:"Seulement 15 % des athlètes atteignent ce niveau. Forceux Académie t'aide à devenir 100 % autonome pour franchir le rang Élite.",                             btn:'Atteindre le rang Élite →' },
-    { key:'elite',        label:'Élite',         icon:'💎', minPct:126,      maxPct:146,      colorClass:'rank-glow-violet',  hex:'#a78bfa', tailwind:'violet',  ctaGrad:'from-violet-950 to-zinc-900',  btnGrad:'from-violet-500 to-violet-600',  btnGlow:'rgba(167,139,250,0.45)', headline:"Tu domines l'arène mondiale",            body:"Top 5 % planétaire. Forceux Académie t'a appris à t'affranchir des programmes génériques — la légende est à un palier.",                        btn:'Devenir Légendaire →' },
-    { key:'legendaire',   label:'Légendaire',    icon:'⚜️', minPct:146,      maxPct:Infinity, colorClass:'rank-glow-gold',    hex:'#fbbf24', tailwind:'yellow',  ctaGrad:'from-yellow-950 to-zinc-900',  btnGrad:'from-yellow-500 to-amber-500',   btnGlow:'rgba(251,191,36,0.55)',  headline:'Tu es une légende vivante',              body:"Moins de 1 % des athlètes de la planète ont atteint ce rang. Forceux Académie t'a armé pour dominer.",                             btn:"Rejoindre Forceux Académie →" },
+    { key:'novice',       label:'Novice',        icon:'🌱', minPct:0,        maxPct:60,       colorClass:'rank-glow-gray',    hex:'#a1a1aa', ctaGrad:'from-zinc-800 to-zinc-900',    btnGlow:'rgba(161,161,170,0.3)',   headline:'Découvre ton potentiel',                 body:"Chaque champion a commencé quelque part. Rejoins Forceux Académie et construis des bases en béton.",                                                   btn:'Commencer ma progression →' },
+    { key:'intermediaire',label:'Intermédiaire', icon:'⚡', minPct:60,       maxPct:86,       colorClass:'rank-glow-blue',    hex:'#60a5fa', ctaGrad:'from-blue-950 to-zinc-900',    btnGlow:'rgba(96,165,250,0.35)',   headline:'Tu es sur la bonne trajectoire',         body:"Tes bases sont solides. Forceux Académie t'apprend à t'autocoacher pour franchir le cap suivant sans programme générique.",                            btn:'Accélérer ma progression →' },
+    { key:'avance',       label:'Avancé',        icon:'🔥', minPct:86,       maxPct:106,      colorClass:'rank-glow-amber',   hex:'#fbbf24', ctaGrad:'from-amber-950 to-zinc-900',   btnGlow:'rgba(251,191,36,0.4)',    headline:'Tu es au-dessus de la moyenne',          body:"Tu dépasses la plupart des compétiteurs. Forceux Académie te donne les outils pour t'autocoacher et viser le top 20 %.",                               btn:'Franchir le cap Expert →' },
+    { key:'expert',       label:'Expert',        icon:'🏆', minPct:106,      maxPct:126,      colorClass:'rank-glow-red',     hex:'#f87171', ctaGrad:'from-red-950 to-zinc-900',     btnGlow:'rgba(248,113,113,0.45)', headline:'Tu fais partie des meilleurs',           body:"Seulement 15 % des athlètes atteignent ce niveau. Forceux Académie t'aide à devenir 100 % autonome pour franchir le rang Élite.",                    btn:'Atteindre le rang Élite →' },
+    { key:'elite',        label:'Élite',         icon:'💎', minPct:126,      maxPct:146,      colorClass:'rank-glow-violet',  hex:'#a78bfa', ctaGrad:'from-violet-950 to-zinc-900',  btnGlow:'rgba(167,139,250,0.45)', headline:"Tu domines l'arène mondiale",            body:"Top 5 % planétaire. Forceux Académie t'a appris à t'affranchir des programmes génériques — la légende est à un palier.",                              btn:'Devenir Légendaire →' },
+    { key:'legendaire',   label:'Légendaire',    icon:'⚜️', minPct:146,      maxPct:Infinity, colorClass:'rank-glow-gold',    hex:'#fbbf24', ctaGrad:'from-yellow-950 to-zinc-900',  btnGlow:'rgba(251,191,36,0.55)',  headline:'Tu es une légende vivante',              body:"Moins de 1 % des athlètes de la planète ont atteint ce rang. Forceux Académie t'a armé pour dominer.",                                               btn:"Rejoindre Forceux Académie →" },
 ];
 
-function getRank(pctWW) {
-    const p = parseFloat(pctWW);
-    return RANKS.find(r => p >= r.minPct && p < r.maxPct) || RANKS[RANKS.length-1];
+function getRank(pct) {
+    const p = parseFloat(pct);
+    return RANKS.find(r => p >= r.minPct && p < r.maxPct) || RANKS[RANKS.length - 1];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -323,6 +375,12 @@ const getIcon = (pct) => parseFloat(pct) >= 100
     ? `<svg class="w-4 h-4 text-emerald-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>`
     : `<svg class="w-4 h-4 text-rose-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>`;
 
+function barColor(pct) {
+    if (pct >= 100) return '#34d399';
+    if (pct >= 80)  return '#fbbf24';
+    return '#f87171';
+}
+
 // ─── Confetti ────────────────────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#E63946','#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#fb923c','#fff'];
 function spawnConfetti() {
@@ -333,35 +391,18 @@ function spawnConfetti() {
         const w = 6 + Math.random() * 10;
         const h = w * (0.4 + Math.random() * 0.6);
         const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-        p.style.cssText = `
-            width:${w}px; height:${h}px;
-            left:${Math.random()*100}vw;
-            background:${color};
-            animation-duration:${2.4 + Math.random()*2.2}s;
-            animation-delay:${Math.random()*0.9}s;
-            border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-        `;
+        p.style.cssText = `width:${w}px;height:${h}px;left:${Math.random()*100}vw;background:${color};animation-duration:${2.4+Math.random()*2.2}s;animation-delay:${Math.random()*0.9}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
         container.appendChild(p);
         p.addEventListener('animationend', () => p.remove());
     }
 }
-
-// ─── Particles (Élite/Légendaire) ────────────────────────────────────────────
 function spawnParticles(color) {
     const container = document.getElementById('particleContainer');
     for (let i = 0; i < 28; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         const size = 8 + Math.random() * 14;
-        p.style.cssText = `
-            width:${size}px; height:${size}px;
-            left:${Math.random()*100}vw;
-            background:${color};
-            animation-duration:${2.2 + Math.random()*2.4}s;
-            animation-delay:${Math.random()*0.8}s;
-            opacity:0.85;
-            box-shadow: 0 0 ${size}px ${color};
-        `;
+        p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}vw;background:${color};animation-duration:${2.2+Math.random()*2.4}s;animation-delay:${Math.random()*0.8}s;opacity:0.85;box-shadow:0 0 ${size}px ${color};`;
         container.appendChild(p);
         p.addEventListener('animationend', () => p.remove());
     }
@@ -379,72 +420,111 @@ function animateCount(el, target, duration=1100) {
     requestAnimationFrame(step);
 }
 
-// ─── Progress bar color ───────────────────────────────────────────────────────
-function barColor(pct) {
-    if (pct >= 100) return '#34d399';   // emerald
-    if (pct >= 80)  return '#fbbf24';   // amber
-    return '#f87171';                   // red
+// ─── Toggle Zone FR / WW ─────────────────────────────────────────────────────
+function setZone(zone) {
+    currentZone = zone;
+    document.getElementById('toggleWW').className = `toggle-btn ${zone==='WW'?'active':'inactive'} px-5 py-2 rounded-lg text-sm font-bold tracking-wide`;
+    document.getElementById('toggleFR').className = `toggle-btn ${zone==='FR'?'active':'inactive'} px-5 py-2 rounded-lg text-sm font-bold tracking-wide`;
+    if (lastInputs) renderResults(lastInputs);
 }
 
-// ─── Main function ───────────────────────────────────────────────────────────
-let myChart = null;
+// ─── Recommencer ─────────────────────────────────────────────────────────────
+function recommencer() {
+    document.getElementById('formZone').classList.remove('opacity-50', 'pointer-events-none');
+    document.getElementById('resultatContainer').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
+// ─── Comparer (entry point) ───────────────────────────────────────────────────
 function comparer() {
     const sexe  = document.getElementById('sexe').value;
+    const age   = document.getElementById('age').value;
+    const poids = document.getElementById('poids').value;
     const vSq   = parseFloat(document.getElementById('sq').value) || 0;
     const vBp   = parseFloat(document.getElementById('bp').value) || 0;
     const vDl   = parseFloat(document.getElementById('dl').value) || 0;
     const total = vSq + vBp + vDl;
 
-    const resContainer = document.getElementById('resultatContainer');
-    const resContent   = document.getElementById('resultat');
-    const rankZone     = document.getElementById('rankRevealZone');
-    const ctaZone      = document.getElementById('ctaZone');
-
-    resContainer.classList.remove('hidden');
-    resContainer.classList.add('animate-fade-in-up');
-
-    // Scroll to results
-    setTimeout(() => resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-
-    if (total === 0) {
-        rankZone.innerHTML = '';
-        resContent.innerHTML = `
-            <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
-                <p class="text-red-400 font-medium">Veuillez entrer au moins une performance (kg).</p>
-            </div>`;
-        ctaZone.innerHTML = '';
-        document.getElementById('radarWrap').classList.add('hidden');
-        if(myChart) myChart.destroy();
+    // Validation
+    if (!age || !poids || total === 0) {
+        alert('Merci de renseigner ton âge, ton poids de corps et au moins un lift.');
+        return;
+    }
+    if (!DB || Object.keys(DB).length === 0) {
+        alert('Erreur : base de données manquante.');
         return;
     }
 
-    document.getElementById('radarWrap').classList.remove('hidden');
-    const ref = dataRef[sexe];
+    // Stocker les inputs pour re-render au toggle
+    lastInputs = { sexe, age, poids, vSq, vBp, vDl, total };
 
-    // Percentages
-    const pctWW = ((total / ref.WW.total) * 100).toFixed(1);
-    const pctFR = ((total / ref.FR.total) * 100).toFixed(1);
-    const pctSqFR = ((vSq / ref.FR.sq) * 100).toFixed(1);
-    const pctSqWW = ((vSq / ref.WW.sq) * 100).toFixed(1);
-    const pctBpFR = ((vBp / ref.FR.bp) * 100).toFixed(1);
-    const pctBpWW = ((vBp / ref.WW.bp) * 100).toFixed(1);
-    const pctDlFR = ((vDl / ref.FR.dl) * 100).toFixed(1);
-    const pctDlWW = ((vDl / ref.WW.dl) * 100).toFixed(1);
+    // Griser le formulaire
+    document.getElementById('formZone').classList.add('opacity-50', 'pointer-events-none');
 
-    const rank = getRank(pctWW);
+    // Afficher la zone résultats
+    const resContainer = document.getElementById('resultatContainer');
+    resContainer.classList.remove('hidden');
+    resContainer.style.animation = 'fadeInUp 0.5s ease-out forwards';
 
-    // ── RANK REVEAL ──────────────────────────────────────────────────────────
+    setTimeout(() => resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+
+    renderResults(lastInputs);
+}
+
+// ─── Render results ───────────────────────────────────────────────────────────
+function renderResults({ sexe, age, poids, vSq, vBp, vDl, total }) {
+    const division  = getDivision(age);
+    const poidsCat  = getWeightCat(sexe, Math.round(parseFloat(poids)));
+    const zone      = currentZone;
+
+    const ref = lookup(sexe, division, poidsCat, zone);
+
+    const rankZone   = document.getElementById('rankRevealZone');
+    const resContent = document.getElementById('resultat');
+    const ctaZone    = document.getElementById('ctaZone');
+
+    // ── Pas de données trouvées ───────────────────────────────────────────────
+    if (!ref) {
+        const zoneLabel = zone === 'FR' ? 'France' : 'Monde';
+        rankZone.innerHTML = '';
+        resContent.innerHTML = `
+            <div class="p-5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center space-y-2">
+                <p class="text-amber-400 font-bold text-base">Aucune donnée disponible</p>
+                <p class="text-zinc-400 text-sm">Aucune référence trouvée pour : <strong class="text-white">${sexe === 'M' ? 'Homme' : 'Femme'} · ${division} · cat. ${poidsCat} kg · ${zoneLabel}</strong></p>
+                <p class="text-zinc-500 text-xs">Essaie de basculer sur l'autre zone (France ↔ Monde) ou vérifie ton âge et ton poids.</p>
+            </div>`;
+        ctaZone.innerHTML = '';
+        document.getElementById('radarWrap').classList.add('hidden');
+        if (myChart) myChart.destroy();
+        return;
+    }
+
+    // ── Calculs ───────────────────────────────────────────────────────────────
+    const pctTotal = ((total / ref.Total) * 100).toFixed(1);
+    const pctSq    = ((vSq   / ref.Squat) * 100).toFixed(1);
+    const pctBp    = ((vBp   / ref.Bench) * 100).toFixed(1);
+    const pctDl    = ((vDl   / ref.Deadlift) * 100).toFixed(1);
+
+    const rank = getRank(pctTotal);
+
+    // ── DOTS affiché ─────────────────────────────────────────────────────────
+    const glRef = ref.Goodlift;
+    // On estime le DOTS utilisateur par proportionnalité (total / ref.Total * ref.Goodlift)
+    const glUser = total > 0 ? ((total / ref.Total) * glRef).toFixed(1) : 0;
+    const glPct  = Math.min(Math.round((glUser / glRef) * 100), 160);
+
+    // ── Tier dots ─────────────────────────────────────────────────────────────
     const tierDots = RANKS.map((r, i) => {
         const active = RANKS.indexOf(rank) >= i;
         return `<div class="tier-dot ${active ? 'lit' : 'dim'}" style="background:${r.hex};color:${r.hex}" title="${r.label}"></div>`;
     }).join('');
 
+    // ── Rank Reveal ───────────────────────────────────────────────────────────
     rankZone.innerHTML = `
         <div class="text-center py-6 space-y-4">
-            <div class="rank-icon-glow" style="--glow-color:${rank.hex}">
-                <div id="rankIcon" class="text-7xl sm:text-8xl leading-none rank-icon-reveal" style="opacity:0;filter:drop-shadow(0 8px 20px ${rank.hex}99)">${rank.icon}</div>
-                <div style="width:70%;height:24px;margin:0 auto;background:${rank.hex};border-radius:50%;filter:blur(14px);opacity:0.5;margin-top:-8px;pointer-events:none;"></div>
+            <div class="relative inline-block">
+                <div id="rankIcon" class="text-7xl sm:text-8xl leading-none rank-icon-reveal" style="opacity:0">${rank.icon}</div>
+                <div style="width:90%;height:40px;margin:0 auto;background:${rank.hex};border-radius:50%;filter:blur(22px);opacity:0.6;margin-top:-14px;pointer-events:none;"></div>
             </div>
             <div>
                 <p class="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-1">Rang atteint</p>
@@ -452,63 +532,87 @@ function comparer() {
             </div>
             <div class="flex items-center justify-center gap-2.5 pt-1">${tierDots}</div>
             <p class="text-xs text-zinc-600 font-medium">${RANKS.indexOf(rank) + 1} / ${RANKS.length} niveaux</p>
-            <div class="mt-4">
-                <p class="text-zinc-500 text-xs font-semibold uppercase tracking-widest mb-1">Total soulevé</p>
-                <div class="flex items-baseline justify-center gap-1">
-                    <span id="countUpEl" class="text-5xl font-black text-white tracking-tighter">0</span>
-                    <span class="text-2xl text-zinc-500 font-semibold">kg</span>
+            <div class="mt-2 text-xs text-zinc-600 font-medium">
+                ${sexe === 'M' ? 'Homme' : 'Femme'} · ${division} · Catégorie ${poidsCat} kg
+            </div>
+
+            <!-- Total + DOTS -->
+            <div class="grid grid-cols-2 gap-4 mt-4 max-w-xs mx-auto">
+                <div class="bg-zinc-950/60 border border-zinc-800 rounded-2xl p-4 text-center">
+                    <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total soulevé</p>
+                    <div class="flex items-baseline justify-center gap-1">
+                        <span id="countUpEl" class="text-3xl font-black text-white tracking-tighter">0</span>
+                        <span class="text-base text-zinc-500 font-semibold">kg</span>
+                    </div>
+                </div>
+                <div class="bg-zinc-950/60 border border-zinc-800 rounded-2xl p-4 text-center">
+                    <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">GL Points</p>
+                    <div class="flex items-baseline justify-center gap-1">
+                        <span id="glEl" class="text-3xl font-black tracking-tighter" style="color:${rank.hex}">0</span>
+                        <span class="text-[10px] text-zinc-600 font-semibold self-end mb-0.5">GL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOTS vs référence -->
+            <div class="max-w-xs mx-auto mt-2">
+                <div class="flex justify-between text-xs mb-1.5">
+                    <span class="font-bold text-zinc-400">Score GL</span>
+                    <span class="text-zinc-500">Référence : <strong class="text-white">${glRef}</strong></span>
+                </div>
+                <div class="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full bar-fill bar-1" style="width:${Math.min(glPct, 100)}%; background:${rank.hex}; box-shadow:0 0 8px ${rank.hex}66;"></div>
                 </div>
             </div>
         </div>`;
 
-    // Animate count-up
     setTimeout(() => animateCount(document.getElementById('countUpEl'), total), 200);
-
-    // Confetti on every rank reveal
-    setTimeout(() => spawnConfetti(), 350);
-
-    // Extra particles for Élite+
-    if (rank.key === 'elite' || rank.key === 'legendaire') {
-        setTimeout(() => spawnParticles(rank.hex), 600);
+    setTimeout(() => animateCount(document.getElementById('glEl'), parseFloat(glUser)), 200);
+    if (!hasRevealedOnce) {
+        hasRevealedOnce = true;
+        setTimeout(() => spawnConfetti(), 350);
+        if (rank.key === 'elite' || rank.key === 'legendaire') {
+            setTimeout(() => spawnParticles(rank.hex), 600);
+        }
     }
 
-    // ── MAIN RESULTS ─────────────────────────────────────────────────────────
-    // Progress bar data
+    // ── Progress bars ─────────────────────────────────────────────────────────
     const lifts = [
-        { name: 'Squat',    val: vSq, avg: ref.WW.sq, pctWW: parseFloat(pctSqWW) },
-        { name: 'Bench',    val: vBp, avg: ref.WW.bp, pctWW: parseFloat(pctBpWW) },
-        { name: 'Deadlift', val: vDl, avg: ref.WW.dl, pctWW: parseFloat(pctDlWW) },
+        { name: 'Squat',    val: vSq, avg: ref.Squat,    pct: parseFloat(pctSq) },
+        { name: 'Bench',    val: vBp, avg: ref.Bench,    pct: parseFloat(pctBp) },
+        { name: 'Deadlift', val: vDl, avg: ref.Deadlift, pct: parseFloat(pctDl) },
     ];
 
+    const zoneLabel = zone === 'FR' ? '🇫🇷 France' : '🌍 Monde';
+
     const progressBars = lifts.map((l, i) => {
-        const clampedPct = Math.min(l.pctWW, 160);
-        const color = barColor(l.pctWW);
+        const clampedPct = Math.min(l.pct, 160);
+        const color = barColor(l.pct);
         const deficit = l.avg - l.val;
-        const hint = l.pctWW >= 100
-            ? `<span class="text-emerald-400 font-medium">✓ Au-dessus de la moyenne mondiale</span>`
-            : `<span class="text-zinc-500">Il te manque <strong class="text-white">${Math.abs(deficit).toFixed(1)} kg</strong> pour atteindre la moyenne mondiale</span>`;
+        const hint = l.pct >= 100
+            ? `<span class="text-emerald-400 font-medium">✓ Au-dessus de la moyenne (${l.avg} kg)</span>`
+            : `<span class="text-zinc-500">Il te manque <strong class="text-white">${Math.abs(deficit).toFixed(1)} kg</strong> pour atteindre la moyenne (<strong class="text-zinc-400">${l.avg} kg</strong>)</span>`;
         return `
             <div>
                 <div class="flex justify-between text-xs mb-1.5">
-                    <span class="font-bold text-zinc-300">${l.name}</span>
-                    <span class="font-semibold" style="color:${color}">${l.pctWW.toFixed(1)}% vs Monde</span>
+                    <span class="font-bold text-zinc-300">${l.name} <span class="text-zinc-600 font-normal">· moy. ${l.avg} kg</span></span>
+                    <span class="font-semibold" style="color:${color}">${l.pct.toFixed(1)}%</span>
                 </div>
                 <div class="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full bar-fill bar-${i+1}" style="width:${clampedPct}%; background:${color}; box-shadow: 0 0 8px ${color}66;"></div>
+                    <div class="h-full rounded-full bar-fill bar-${i+1}" style="width:${clampedPct}%; background:${color}; box-shadow:0 0 8px ${color}66;"></div>
                 </div>
                 <p class="text-xs mt-1 text-zinc-500">${hint}</p>
             </div>`;
     }).join('');
 
-    // Next milestone
+    // ── Milestone card ────────────────────────────────────────────────────────
     const rankIndex = RANKS.indexOf(rank);
     const nextRank  = RANKS[rankIndex + 1];
     let milestoneHTML = '';
     if (nextRank) {
-        const nextPct = nextRank.minPct / 100;
-        const needed  = Math.ceil(ref.WW.total * nextPct - total);
+        const needed = Math.ceil(ref.Total * (nextRank.minPct / 100) - total);
         milestoneHTML = `
-            <div class="mt-6 rounded-2xl overflow-hidden" style="border:1px solid ${nextRank.hex}40; background:#111113;">
+            <div class="mt-6 rounded-2xl" style="border:1px solid ${nextRank.hex}40; background:#111113;">
                 <div class="p-4 flex items-center gap-4">
                     <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style="background:${nextRank.hex}18; border:1px solid ${nextRank.hex}30;">
                         ${nextRank.icon}
@@ -528,100 +632,42 @@ function comparer() {
             </div>`;
     }
 
+    // ── Main content ──────────────────────────────────────────────────────────
     resContent.innerHTML = `
-        <!-- Global comparison -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
-                <div>
-                    <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-1">Total vs France 🇫🇷</p>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-2xl font-bold text-white">${pctFR}%</span>
-                        <span class="text-xs text-zinc-500">(Moy: ${ref.FR.total}kg)</span>
-                    </div>
-                </div>
-                <div class="p-3 bg-zinc-900 rounded-xl group-hover:scale-105 transition-transform">${getIcon(pctFR)}</div>
-            </div>
-            <div class="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
-                <div>
-                    <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-1">Total vs Monde 🌍</p>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-2xl font-bold text-white">${pctWW}%</span>
-                        <span class="text-xs text-zinc-500">(Moy: ${ref.WW.total}kg)</span>
-                    </div>
-                </div>
-                <div class="p-3 bg-zinc-900 rounded-xl group-hover:scale-105 transition-transform">${getIcon(pctWW)}</div>
-            </div>
-        </div>
-
-        <!-- Per-lift rows -->
-        <div class="space-y-4 mt-2">
-            <h4 class="text-xs font-bold tracking-wider text-zinc-500 uppercase ml-1">Analyse détaillée par mouvement</h4>
-            <div class="grid grid-cols-1 gap-3">
-                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Squat</span><span class="text-xs text-zinc-500">Ton max : ${vSq} kg</span></div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctSqFR)}">FR : ${pctSqFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.sq})</span></span>
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctSqWW)}">Monde : ${pctSqWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.sq})</span></span>
-                    </div>
-                </div>
-                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Bench</span><span class="text-xs text-zinc-500">Ton max : ${vBp} kg</span></div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctBpFR)}">FR : ${pctBpFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.bp})</span></span>
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctBpWW)}">Monde : ${pctBpWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.bp})</span></span>
-                    </div>
-                </div>
-                <div class="bg-zinc-950/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-2"><span class="text-sm font-bold text-white">Deadlift</span><span class="text-xs text-zinc-500">Ton max : ${vDl} kg</span></div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctDlFR)}">FR : ${pctDlFR}% <span class="text-[10px] opacity-70">(Moy: ${ref.FR.dl})</span></span>
-                        <span class="text-xs px-2.5 py-1 rounded-lg font-semibold ${getBadgeClass(pctDlWW)}">Monde : ${pctDlWW}% <span class="text-[10px] opacity-70">(Moy: ${ref.WW.dl})</span></span>
-                    </div>
+        <!-- Global % -->
+        <div class="bg-zinc-950/50 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-colors">
+            <div>
+                <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-1">Total vs ${zoneLabel}</p>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-2xl font-bold text-white">${pctTotal}%</span>
+                    <span class="text-xs text-zinc-500">(Moy: ${ref.Total} kg)</span>
                 </div>
             </div>
+            <div class="p-3 bg-zinc-900 rounded-xl group-hover:scale-105 transition-transform">${getIcon(pctTotal)}</div>
         </div>
 
         <!-- Progress bars -->
         <div class="bg-zinc-950/40 border border-zinc-800/60 rounded-2xl p-5 mt-2 space-y-4">
-            <h4 class="text-xs font-bold tracking-wider text-zinc-500 uppercase">Progression vs moyenne mondiale</h4>
+            <h4 class="text-xs font-bold tracking-wider text-zinc-500 uppercase">Progression vs ${zoneLabel}</h4>
             ${progressBars}
         </div>
 
-        ${milestoneHTML}
-    `;
+        ${milestoneHTML}`;
 
-    // ── CTA ──────────────────────────────────────────────────────────────────
-    ctaZone.innerHTML = `
-        <div class="cta-card rounded-2xl p-6 relative overflow-hidden border text-center" 
-             style="background: linear-gradient(135deg, ${rank.hex}18, rgba(9,9,11,0.95)); border-color:${rank.hex}35;">
-            <div class="absolute inset-0 bg-gradient-to-br ${rank.ctaGrad} opacity-40 pointer-events-none"></div>
-            <div class="relative z-10">
-                <p class="text-xs font-bold tracking-widest uppercase mb-1" style="color:${rank.hex}">${rank.icon} Rang ${rank.label}</p>
-                <h3 class="text-xl font-extrabold text-white mb-2">${rank.headline}</h3>
-                <p class="text-zinc-400 text-sm mb-5 max-w-sm mx-auto">${rank.body}</p>
-                <a href="https://www.forceux.fr/" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center justify-center w-full text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg"
-                   style="background: linear-gradient(135deg, ${rank.hex}, ${rank.hex}cc); box-shadow: 0 4px 24px ${rank.btnGlow};">
-                    ${rank.btn}
-                </a>
-            </div>
-        </div>`;
-
-    // ── RADAR CHART ───────────────────────────────────────────────────────────
+    // ── Radar ─────────────────────────────────────────────────────────────────
+    document.getElementById('radarWrap').classList.remove('hidden');
     const ctx = document.getElementById('radarChart').getContext('2d');
-    if(myChart) myChart.destroy();
+    if (myChart) myChart.destroy();
     const gradientBg = ctx.createRadialGradient(0,0,0,0,0,150);
     gradientBg.addColorStop(0,'rgba(230,57,70,0.5)');
     gradientBg.addColorStop(1,'rgba(230,57,70,0.1)');
-
     myChart = new Chart(ctx, {
         type: 'radar',
         data: {
             labels: ['Squat','Bench','Deadlift'],
             datasets: [
-                { label:' Toi',    data:[vSq,vBp,vDl],             backgroundColor:gradientBg, borderColor:'#E63946', borderWidth:3, pointBackgroundColor:'#fff', pointBorderColor:'#E63946', pointBorderWidth:2, pointRadius:4, pointHoverRadius:6, fill:true, order:1 },
-                { label:' France', data:[ref.FR.sq,ref.FR.bp,ref.FR.dl], borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.15)', borderWidth:2, pointBackgroundColor:'#3B82F6', pointRadius:3, fill:true, order:2 },
-                { label:' Monde',  data:[ref.WW.sq,ref.WW.bp,ref.WW.dl], borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.15)', borderWidth:2, pointBackgroundColor:'#10B981', pointRadius:3, fill:true, order:3 }
+                { label:' Toi',    data:[vSq,vBp,vDl],                           backgroundColor:gradientBg,              borderColor:'#E63946', borderWidth:3, pointBackgroundColor:'#fff', pointBorderColor:'#E63946', pointBorderWidth:2, pointRadius:4, pointHoverRadius:6, fill:true, order:1 },
+                { label:` Moy ${zoneLabel}`, data:[ref.Squat,ref.Bench,ref.Deadlift], borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.15)', borderWidth:2, pointBackgroundColor:'#10B981', pointRadius:3, fill:true, order:2 }
             ]
         },
         options: {
@@ -638,6 +684,22 @@ function comparer() {
             animation:{ duration:1000, easing:'easeOutQuart' }
         }
     });
+
+    // ── CTA ───────────────────────────────────────────────────────────────────
+    ctaZone.innerHTML = `
+        <div class="cta-card rounded-2xl p-6 relative overflow-hidden border text-center"
+             style="background:linear-gradient(135deg, ${rank.hex}18, rgba(9,9,11,0.95)); border-color:${rank.hex}35;">
+            <div class="relative z-10">
+                <p class="text-xs font-bold tracking-widest uppercase mb-1" style="color:${rank.hex}">${rank.icon} Rang ${rank.label}</p>
+                <h3 class="text-xl font-extrabold text-white mb-2">${rank.headline}</h3>
+                <p class="text-zinc-400 text-sm mb-5 max-w-sm mx-auto">${rank.body}</p>
+                <a href="https://www.forceux.fr/" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center justify-center w-full text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] shadow-lg"
+                   style="background:linear-gradient(135deg, ${rank.hex}, ${rank.hex}cc); box-shadow:0 4px 24px ${rank.btnGlow};">
+                    ${rank.btn}
+                </a>
+            </div>
+        </div>`;
 }
 </script>
 </body>
