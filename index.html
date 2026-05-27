@@ -443,7 +443,14 @@ function comparer() {
     const rc = document.getElementById('resultatContainer');
     rc.classList.remove('hidden');
     rc.style.animation='fadeInUp .5s ease-out forwards';
-    setTimeout(()=>rc.scrollIntoView({behavior:'smooth',block:'start'}),80);
+    setTimeout(()=>{
+        // Scroll la page parente vers l'iframe si on est dans un iframe, sinon scroll normal
+        if (window.self !== window.top) {
+            window.parent.postMessage({ type: 'forceux-scroll-top' }, '*');
+        } else {
+            document.getElementById('resultatContainer').scrollIntoView({behavior:'smooth',block:'start'});
+        }
+    },80);
     renderResults(lastInputs);
 }
 
