@@ -444,9 +444,10 @@ function comparer() {
     rc.classList.remove('hidden');
     rc.style.animation='fadeInUp .5s ease-out forwards';
     setTimeout(()=>{
-        // Scroll la page parente vers l'iframe si on est dans un iframe, sinon scroll normal
         if (window.self !== window.top) {
-            window.parent.postMessage({ type: 'forceux-scroll-top' }, '*');
+            const rc = document.getElementById('resultatContainer');
+            const offset = rc ? rc.getBoundingClientRect().top + window.scrollY : 300;
+            window.parent.postMessage({ type: 'forceux-scroll-top', offset: offset }, '*');
         } else {
             document.getElementById('resultatContainer').scrollIntoView({behavior:'smooth',block:'start'});
         }
