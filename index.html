@@ -12,6 +12,7 @@
     <meta name="twitter:description" content="Compare ta force avec +350k compétiteurs réels. Découvre ton rang mondial en Squat, Bench et Deadlift.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,7 +25,7 @@
         }
     </script>
     <style>
-        body { background-color:#09090b; background-image: radial-gradient(circle at 15% 50%,rgba(230,57,70,.05),transparent 25%), radial-gradient(circle at 85% 30%,rgba(230,57,70,.08),transparent 25%); color:#f4f4f5; }
+        body { background:transparent; color:#f4f4f5; }
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
         input[type="number"] { -moz-appearance:textfield; }
@@ -102,10 +103,10 @@
         .rank-progress-fill { animation:rankBarFill 1.2s cubic-bezier(.22,1,.36,1) .3s forwards; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 pb-24">
+<body class="w-full">
 <div id="particleContainer"></div>
 
-<div class="w-full max-w-2xl mx-auto">
+<div class="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8">
     <!-- Header -->
     <div class="text-center mb-8" style="animation:fadeInUp .5s ease-out forwards">
         <div class="inline-flex items-center justify-center mb-5">
@@ -120,8 +121,7 @@
     </div>
 
     <!-- Main Card -->
-    <div class="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10" style="animation:fadeInUp .6s ease-out forwards">
-        <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-600/50 to-transparent"></div>
+    <div class="relative z-10 p-0" >
 
         <!-- FORM -->
         <div id="formZone" class="space-y-6">
@@ -244,7 +244,7 @@
 </div>
 
 <!-- Sticky CTA mobile -->
-<div id="stickyCta" class="fixed bottom-0 left-0 right-0 z-50 p-3 sm:hidden" style="background:linear-gradient(to top,#09090b,transparent)">
+<div id="stickyCta" class="fixed bottom-0 left-0 right-0 z-50 p-3 sm:hidden" style="background:linear-gradient(to top,#0e0e0e,transparent)">
     <a id="stickyCtaLink" href="https://www.forceux.fr/" target="_blank" rel="noopener noreferrer"
        class="flex items-center justify-center w-full text-white font-bold py-3.5 px-6 rounded-xl shadow-lg text-sm active:scale-[.98] transition-all"
        style="background:linear-gradient(135deg,#E63946,#D62835);box-shadow:0 4px 24px rgba(230,57,70,.4);">
